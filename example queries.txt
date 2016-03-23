@@ -1,0 +1,27 @@
+Get game by name
+
+SELECT gname, genre
+FROM game g
+WHERE g.gname LIKE '%' //insert thing here
+
+Get game by average rating
+
+SELECT gname, genre, avg_rating
+FROM 
+(SELECT gname, genre, gameId, AVG(rating) AS avg_rating
+FROM game g INNER JOIN review r
+WHERE g.gameId = r.gameId
+GROUP BY g.gameId)
+WHERE avg_rating > INPUT; //Input being the rating given, ofc
+
+Get game by developer
+
+SELECT gname, genre
+FROM game g INNER JOIN developed d INNER JOIN developer d2
+WHERE (g.gameId = d.gameId AND d.did = d2.did AND d2.name = NAME);
+
+Get game by platform
+
+SELECT gname, genre
+FROM game g INNER JOIN available a INNER JOIN platform p 
+WHERE (g.gameId = a.gameId AND a.pid = p.pid AND p.name = NAME);
