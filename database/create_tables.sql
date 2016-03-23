@@ -1,8 +1,6 @@
 drop table user;
 drop table suspension;
 drop table game;
-drop table developer;
-drop table review;
 drop table platform;
 drop table developer;
 drop table review;
@@ -34,19 +32,6 @@ CREATE TABLE game
 ( gameId INTEGER NOT NULL PRIMARY KEY,
 gameName VARCHAR(100) NOT NULL,
 gameGenre VARCHAR(30) NOT NULL);
-
-CREATE TABLE developer
-( dId INTEGER NOT NULL PRIMARY KEY,
-dName VARCHAR(100) NOT NULL,
-founded DATE NOT NULL);
-
-CREATE TABLE review
-( rId INTEGER NOT NULL PRIMARY KEY,
-description VARCHAR(3000),
-rating INTEGER,
-userId INTEGER NOT NULL,
-gameId INTEGER NOT NULL,
-FOREIGN KEY (userId, gameId) REFERENCES owns);
 
 CREATE TABLE platform
 ( pId INTEGER NOT NULL PRIMARY KEY,
