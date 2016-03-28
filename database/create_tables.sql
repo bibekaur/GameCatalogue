@@ -1,16 +1,16 @@
-drop table rate;
-drop table wishes;
-drop table developed;
-drop table available;
-drop table review;
-drop table owns;
-drop table developer;
-drop table platform;
-drop table game;
-drop table suspension;
-drop table user;
+--drop table rate;
+--drop table wishes;
+--drop table developed;
+--drop table available;
+--drop table review;
+--drop table owns;
+--drop table developer;
+--drop table platform;
+--drop table game;
+--drop table suspension;
+--drop table users;
 
-CREATE TABLE user
+CREATE TABLE users
 ( userId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 username VARCHAR(20) NOT NULL,
 password VARCHAR(30) NOT NULL,
@@ -25,8 +25,8 @@ toTime TIME NOT NULL,
 regular_userId INTEGER NOT NULL,
 moderator_userId INTEGER NOT NULL,
 PRIMARY KEY (fromDate, fromTime, toDate, toTime, regular_userId, moderator_userId),
-FOREIGN KEY (regular_userId) REFERENCES user(userId),
-FOREIGN KEY (moderator_userId) REFERENCES user(userId));
+FOREIGN KEY (regular_userId) REFERENCES users(userId),
+FOREIGN KEY (moderator_userId) REFERENCES users(userId));
 
 CREATE TABLE game
 ( gameId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +50,7 @@ gameId INTEGER NOT NULL,
 since DATE NOT NULL,
 rating INTEGER,
 PRIMARY KEY (userId,gameId),
-FOREIGN KEY (userId) references user(userId),
+FOREIGN KEY (userId) references users(userId),
 FOREIGN KEY (gameId) references game(gameId));
 
 CREATE TABLE review
@@ -83,7 +83,7 @@ CREATE TABLE wishes
 gameId INTEGER NOT NULL,
 rank INTEGER NOT NULL,
 PRIMARY KEY (userId, gameId),
-FOREIGN KEY (userId) references user(userId),
+FOREIGN KEY (userId) references users(userId),
 FOREIGN KEY (gameId) references game(gameId));
 
 CREATE TABLE rate
@@ -91,16 +91,16 @@ CREATE TABLE rate
 rated_userId INTEGER NOT NULL,
 rating INTEGER NOT NULL,
 PRIMARY KEY (rater_userId,rated_userId),
-FOREIGN KEY (rater_userId) references user(userId),
-FOREIGN KEY (rated_userId) references user(userId));
+FOREIGN KEY (rater_userId) references users(userId),
+FOREIGN KEY (rated_userId) references users(userId));
 
-insert into user
+insert into users
 values (DEFAULT, 'mod_user', 'mod_user', CURDATE(),1);
 
-insert into user
+insert into users
 values (DEFAULT, 'user1', 'user1', CURDATE(), 0);
 
-insert into user
+insert into users
 values (DEFAULT, 'user2', 'user2', CURDATE(), 0);
 
 insert into game
