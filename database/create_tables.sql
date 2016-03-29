@@ -1,27 +1,45 @@
---drop table rate;
---drop table wishes;
---drop table developed;
---drop table available;
---drop table review;
---drop table owns;
---drop table developer;
---drop table platform;
---drop table game;
---drop table suspension;
---drop table users;
+drop table rate;
+drop table wishes;
+drop table developed;
+drop table available;
+drop table review;
+drop table owns;
+drop table developer;
+drop table platform;
+drop table game;
+drop table suspension;
+drop table users;
+drop sequence seq_users;
+drop sequence seq_developer;
+drop sequence seq_game;
+drop sequence seq_platform;
+drop sequence seq_review;
+
+
 
 CREATE TABLE users
-( userId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+( userId INTEGER NOT NULL PRIMARY KEY,
 username VARCHAR(20) NOT NULL,
 password VARCHAR(30) NOT NULL,
-joinDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-isModerator BIT DEFAULT 0 );
+joinDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+isModerator CHAR(1) DEFAULT '0',
+CONSTRAINT constraint_users_isModerator CHECK (isModerator IN ('1', '0')) );
+
+CREATE SEQUENCE seq_users;
+
+CREATE OR REPLACE TRIGGER trg_users
+BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+	SELECT seq_users.nextval INTO :new.userId FROM DUAL;
+END;
+/
 
 CREATE TABLE suspension 
 ( fromDate DATE NOT NULL,
-fromTime TIME NOT NULL,
+fromTime TIMESTAMP NOT NULL,
 toDate DATE NOT NULL,
-toTime TIME NOT NULL,
+toTime TIMESTAMP NOT NULL,
 regular_userId INTEGER NOT NULL,
 moderator_userId INTEGER NOT NULL,
 PRIMARY KEY (fromDate, fromTime, toDate, toTime, regular_userId, moderator_userId),
@@ -29,20 +47,50 @@ FOREIGN KEY (regular_userId) REFERENCES users(userId),
 FOREIGN KEY (moderator_userId) REFERENCES users(userId));
 
 CREATE TABLE game
-( gameId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+( gameId INTEGER NOT NULL PRIMARY KEY,
 gameName VARCHAR(100) NOT NULL,
 gameGenre VARCHAR(100) NOT NULL);
 
+CREATE SEQUENCE seq_game;
+
+CREATE OR REPLACE TRIGGER trg_game
+BEFORE INSERT ON game
+FOR EACH ROW
+BEGIN
+	SELECT seq_game.nextval INTO :new.gameId FROM DUAL;
+END;
+/
+
 CREATE TABLE platform
-( pId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+( pId INTEGER NOT NULL PRIMARY KEY,
 pName VARCHAR(100) NOT NULL,
 cost FLOAT,
 releaseDate DATE);
 
+CREATE SEQUENCE seq_platform;
+
+CREATE OR REPLACE TRIGGER trg_platform
+BEFORE INSERT ON platform
+FOR EACH ROW
+BEGIN
+	SELECT seq_platform.nextval INTO :new.pId FROM DUAL;
+END;
+/
+
 CREATE TABLE developer
-( dId INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+( dId INTEGER NOT NULL PRIMARY KEY,
 dName VARCHAR(100) NOT NULL,
 founded DATE);
+
+CREATE SEQUENCE seq_developer;
+
+CREATE OR REPLACE TRIGGER trg_developer
+BEFORE INSERT ON developer
+FOR EACH ROW
+BEGIN
+	SELECT seq_developer.nextval INTO :new.dId FROM DUAL;
+END;
+/
 
 CREATE TABLE owns
 ( userId INTEGER NOT NULL,
@@ -54,13 +102,23 @@ FOREIGN KEY (userId) references users(userId),
 FOREIGN KEY (gameId) references game(gameId));
 
 CREATE TABLE review
-( rId INTEGER NOT NULL AUTO_INCREMENT,
+( rId INTEGER NOT NULL,
 description VARCHAR(3000) NOT NULL,
 rating INTEGER NOT NULL,
 userId INTEGER NOT NULL,
 gameId INTEGER NOT NULL,
 PRIMARY KEY (rId, userId, gameId),
 FOREIGN KEY (userId, gameId) references owns(userId, gameId));
+
+CREATE SEQUENCE seq_review;
+
+CREATE OR REPLACE TRIGGER trg_review
+BEFORE INSERT ON review
+FOR EACH ROW
+BEGIN
+	SELECT seq_review.nextval INTO :new.rId FROM DUAL;
+END;
+/
 
 CREATE TABLE available
 ( gameId INTEGER NOT NULL,
@@ -95,13 +153,13 @@ FOREIGN KEY (rater_userId) references users(userId),
 FOREIGN KEY (rated_userId) references users(userId));
 
 insert into users
-values (DEFAULT, 'mod_user', 'mod_user', CURDATE(),1);
+values (DEFAULT, 'mod_user', 'mod_user', CURRENT_TIMESTAMP,1);
 
 insert into users
-values (DEFAULT, 'user1', 'user1', CURDATE(), 0);
+values (DEFAULT, 'user1', 'user1', CURRENT_TIMESTAMP, 0);
 
 insert into users
-values (DEFAULT, 'user2', 'user2', CURDATE(), 0);
+values (DEFAULT, 'user2', 'user2', CURRENT_TIMESTAMP, 0);
 
 insert into game
 values (DEFAULT, 'The Witness', 'Puzzle');
