@@ -40,9 +40,15 @@ public class GuiProgram extends JFrame{
 					
 					try {
 						Statement s = con.createStatement();
-						String query = "SELECT username, password FROM user WHERE username IS " + loginName + "AND password IS " + loginPassword;
+						//String query = "SELECT username, password FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
+						String query = "SELECT * FROM game";
 						ResultSet rs = s.executeQuery(query);
-						if (!rs.isBeforeFirst() ) {    
+						System.out.println(rs.toString());
+						while(rs.next()){
+							System.out.println("A");
+							System.out.println(rs.getString("gameName"));
+						}
+						if (!rs.next() ) {    
 							 System.out.println("No username/password combo found"); 
 						} 
 						else {
@@ -87,7 +93,7 @@ public class GuiProgram extends JFrame{
 	    try{
 	    	DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 	    	//Change the below line to match your oracle username/password
-	    	con = DriverManager.getConnection("jdbc:oracle:thin@localhost:1522:ug", "ora_i2m8", "a92859115");
+	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_i2m8", "a92859115");
 	    }catch(Exception e){
 	    	e.printStackTrace();
 	    }
