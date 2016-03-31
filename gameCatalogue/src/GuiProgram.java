@@ -26,6 +26,16 @@ public class GuiProgram extends JFrame{
 		setLocation(400,200); // default is 0,0 (top left corner)
 	}
 	
+	public void drawLoggedInScreen(){
+		frame.remove(panel);
+		panel = new JPanel();
+		panel.add(searchField);
+		panel.add(searchButton);
+		frame.setContentPane(panel);
+		frame.revalidate();
+		frame.repaint();;
+	}
+	
 	//Splitting it into initializing what the buttons do
 	public void init(){
 		
@@ -40,26 +50,14 @@ public class GuiProgram extends JFrame{
 					
 					try {
 						Statement s = con.createStatement();
-						//String query = "SELECT username, password FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
-						String query = "SELECT * FROM game";
+						String query = "SELECT username, password FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
+						//Below line checks if it exists or not
 						ResultSet rs = s.executeQuery(query);
-						System.out.println(rs.toString());
-						while(rs.next()){
-							System.out.println("A");
-							System.out.println(rs.getString("gameName"));
-						}
 						if (!rs.next() ) {    
 							 System.out.println("No username/password combo found"); 
 						} 
 						else {
-							frame.remove(panel);
-							JButton box = new JButton("hello");
-							panel = new JPanel();
-							panel.add(box);
-			                frame.setContentPane(panel);
-			                
-							frame.revalidate();	
-							frame.repaint();	
+							drawLoggedInScreen();	
 						}
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
@@ -76,6 +74,22 @@ public class GuiProgram extends JFrame{
 				if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
 					//TODO add user info in the database
 					System.out.println("Signup Got here!");
+					try{
+						Statement s = con.createStatement();
+						String query = "SELECT username FROM users WHERE username = '" + loginName + "'";
+						ResultSet rs = s.executeQuery(query);
+						if (rs.next()){
+							System.out.println("This username is already used");
+						}
+						else {
+							String insertionQuery = "INSERT INTO users VALUES(DEFAULT, '" + loginName + "', '" + loginPassword + "', CURRENT_TIMESTAMP, 0)";
+							s.executeUpdate(insertionQuery);
+							drawLoggedInScreen();
+						}
+
+					}catch (SQLException e1){
+						e1.printStackTrace();
+					}
 				}
 	    	}
 	    });
@@ -83,8 +97,20 @@ public class GuiProgram extends JFrame{
 	    searchButton.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		String search = searchField.getText();
-	    		System.out.println("Attempting to search for ");
-	    		//Perform query and return here;
+	    		System.out.println("Attempting to search for " + search);
+	    		try {
+	    			Statement s = con.createStatement();
+	    			String query = "SELECT gameName, gameGenre FROM game WHERE gameName LIKE '%" + search + "%'";
+	    			ResultSet rs = s.executeQuery(query);
+	    			if (!rs.isBeforeFirst()){
+	    				System.out.println("Could not find a game amatching this query");
+	    			}
+	    			while (rs.next()){
+	    				System.out.println(rs.getString("gameName") + " - " + rs.getString("gameGenre"));
+	    			}
+	    		} catch (SQLException e1){
+	    			e1.printStackTrace();
+	    		}
 	    	}
 	    });
 	}
@@ -109,6 +135,8 @@ public class GuiProgram extends JFrame{
 		loginButton = new JButton("Login");
 		signUpButton = new JButton("Sign-up");
 		searchButton = new JButton("Search");
+		searchField = new JTextField(30);
+
 		
 		panel.add(loginName);
 		panel.add(loginNameBox);
