@@ -162,13 +162,13 @@ public class GuiProgram extends JFrame{
 	    		System.out.println("Attempting to search for " + search);
 	    		try {
 	    			Statement s = con.createStatement();
-	    			String query = "SELECT gameName, gameGenre "
+	    			String query = "SELECT gameName, genre "
 	    					+ "FROM game g INNER JOIN developed d ON g.gameId = d.gameId "
 	    					+ "INNER JOIN developer d2 ON d.dId = d2.dId"
-	    					+ " WHERE d2.dName LIKE '%" + search + "%'";
+	    					+ " WHERE g.gameName LIKE '%" + search + "%'";
 	    			ResultSet rs = s.executeQuery(query);
 	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a game matching this query");
+	    				System.out.println("Could not find a platform matching this query");
 	    			}
 	    			else {
 	    				addGamesToPanel(rs);

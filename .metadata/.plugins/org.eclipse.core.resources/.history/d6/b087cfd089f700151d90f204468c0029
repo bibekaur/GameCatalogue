@@ -164,8 +164,8 @@ public class GuiProgram extends JFrame{
 	    			Statement s = con.createStatement();
 	    			String query = "SELECT gameName, gameGenre "
 	    					+ "FROM game g INNER JOIN developed d ON g.gameId = d.gameId "
-	    					+ "INNER JOIN developer d2 ON d.dId = d2.dId"
-	    					+ " WHERE d2.dName LIKE '%" + search + "%'";
+	    					+ "INNER JOIN developer d2 ON d.dId = d2.dId";
+	    					//+ " WHERE d2.dName LIKE '%" + search + "%'";
 	    			ResultSet rs = s.executeQuery(query);
 	    			if (!rs.isBeforeFirst()){
 	    				System.out.println("Could not find a game matching this query");

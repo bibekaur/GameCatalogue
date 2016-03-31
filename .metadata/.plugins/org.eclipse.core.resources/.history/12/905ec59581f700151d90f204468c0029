@@ -19,7 +19,6 @@ public class GuiProgram extends JFrame{
 	private JButton searchGameName;
 	private JButton searchDeveloperName;
 	private JButton searchPlatformName;
-	private JButton searchGameViaDeveloper;
 	
 	private JTextField searchField;
 	
@@ -33,7 +32,7 @@ public class GuiProgram extends JFrame{
 		frame.remove(panel);
 		panel = new JPanel();
 		panel.add(searchField);
-		panel.add(searchGameViaDeveloper);
+		panel.add(searchGameName);
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();;
@@ -156,28 +155,6 @@ public class GuiProgram extends JFrame{
 	    		}
 	    	}	    	
 	    });
-	    searchGameViaDeveloper.addActionListener(new ActionListener(){
-	    	public void actionPerformed(ActionEvent e){
-	    		String search = searchField.getText();
-	    		System.out.println("Attempting to search for " + search);
-	    		try {
-	    			Statement s = con.createStatement();
-	    			String query = "SELECT gameName, gameGenre "
-	    					+ "FROM game g INNER JOIN developed d ON g.gameId = d.gameId "
-	    					+ "INNER JOIN developer d2 ON d.dId = d2.dId"
-	    					+ " WHERE d2.dName LIKE '%" + search + "%'";
-	    			ResultSet rs = s.executeQuery(query);
-	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a game matching this query");
-	    			}
-	    			else {
-	    				addGamesToPanel(rs);
-	    			}
-	    		} catch (SQLException e1){
-	    			e1.printStackTrace();
-	    		}
-	    	}	       	
-	    });
 	}
 	
 	public void addGamesToPanel(ResultSet rs){
@@ -214,7 +191,6 @@ public class GuiProgram extends JFrame{
 		searchGameName = new JButton("Search");
 		searchDeveloperName = new JButton("Search");
 		searchPlatformName = new JButton("Search");
-		searchGameViaDeveloper = new JButton("Search");
 		
 		searchField = new JTextField(30);
 

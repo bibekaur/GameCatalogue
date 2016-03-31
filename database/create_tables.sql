@@ -205,3 +205,42 @@ values (DEFAULT, 'FromSoftware', '2009-09-01');
 
 insert into developer
 values (DEFAULT, 'tobyfox', null);
+
+insert into developed
+values (1, 1);
+
+insert into developed
+values (2, 6);
+
+insert into developed
+values (3, 3);
+
+insert into developed
+values (4, 5);
+
+insert into developed
+values (5, 4);
+
+insert into developed
+values (6, 2);
+
+insert into available
+values (1, 1, 43.99, '2016-01-26');
+
+insert into available
+values (1, 3, 43.99, '2016-01-26');
+
+insert into available
+values (2, 1, 10.99, '2015-09-15');
+
+insert into available
+values (3, 2, 59.99, '2015-10-27');
+
+insert into available
+values (4, 3, 69.99, '2015-03-24');
+
+insert into available
+values (5, 1, 14.99, '2011-07-16');
+
+insert into available
+values (6, 1, 21.99, '2010-09-10');
