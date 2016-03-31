@@ -186,11 +186,7 @@ public class GuiProgram extends JFrame{
 	public void addGamesToPanel(ResultSet rs){
 		try{
 			while(rs.next()){
-				//This is going to break rn if you try to print out other things
-				//That don't have those columns
-				//We need to make it a bit more generic?
-				//Or we could be lazy and just make one for each type \:D/
-				JLabel temp = new JLabel(rs.getString("gameName") + " - " + rs.getString("gameGenre") + " - " + rs.getString("pName"));
+				JLabel temp = new JLabel(rs.getString("gameName") + " - " + rs.getString("gameGenre"));
 				panel.add(temp);
 			}
 		}catch (SQLException e1){
