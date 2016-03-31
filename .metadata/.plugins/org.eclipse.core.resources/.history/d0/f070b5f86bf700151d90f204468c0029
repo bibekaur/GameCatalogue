@@ -16,9 +16,7 @@ public class GuiProgram extends JFrame{
 	private JTextField loginPasswordBox;
 	private JButton loginButton;
 	private JButton signUpButton;
-	private JButton searchGameName;
-	private JButton searchDeveloperName;
-	private JButton searchPlatformName;
+	private JButton searchButton;
 	
 	private JTextField searchField;
 	
@@ -32,7 +30,7 @@ public class GuiProgram extends JFrame{
 		frame.remove(panel);
 		panel = new JPanel();
 		panel.add(searchField);
-		panel.add(searchGameName);
+		panel.add(searchButton);
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();;
@@ -96,7 +94,7 @@ public class GuiProgram extends JFrame{
 	    	}
 	    });
 	    
-	    searchGameName.addActionListener(new ActionListener(){
+	    searchButton.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		String search = searchField.getText();
 	    		System.out.println("Attempting to search for " + search);
@@ -105,7 +103,7 @@ public class GuiProgram extends JFrame{
 	    			String query = "SELECT gameName, gameGenre FROM game WHERE gameName LIKE '%" + search + "%'";
 	    			ResultSet rs = s.executeQuery(query);
 	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a game matching this query");
+	    				System.out.println("Could not find a game amatching this query");
 	    			}
 	    			else {
 	    				addGamesToPanel(rs);
@@ -115,53 +113,12 @@ public class GuiProgram extends JFrame{
 	    		}
 	    	}
 	    });
-	    
-	    searchDeveloperName.addActionListener(new ActionListener(){
-	    	public void actionPerformed(ActionEvent e){
-	    		String search = searchField.getText();
-	    		System.out.println("Attempting to search for " + search);
-	    		try {
-	    			Statement s = con.createStatement();
-	    			String query = "SELECT dName FROM developer WHERE dName LIKE '%" + search + "%'";
-	    			ResultSet rs = s.executeQuery(query);
-	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a developer matching this query");
-	    			}
-	    			else {
-	    				addGamesToPanel(rs);
-	    			}
-	    		} catch (SQLException e1){
-	    			e1.printStackTrace();
-	    		}
-	    	}	    	
-	    });
-	    
-	    searchConsoleName.addActionListener(new ActionListener(){
-	    	public void actionPerformed(ActionEvent e){
-	    		String search = searchField.getText();
-	    		System.out.println("Attempting to search for " + search);
-	    		try {
-	    			Statement s = con.createStatement();
-	    			String query = "SELECT pName, cost, releaseDate FROM platform WHERE pName LIKE '%" + search + "%'";
-	    			ResultSet rs = s.executeQuery(query);
-	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a platform matching this query");
-	    			}
-	    			else {
-	    				addGamesToPanel(rs);
-	    			}
-	    		} catch (SQLException e1){
-	    			e1.printStackTrace();
-	    		}
-	    	}	    	
-	    });
 	}
 	
 	public void addGamesToPanel(ResultSet rs){
 		try{
 			while(rs.next()){
 				JLabel temp = new JLabel(rs.getString("gameName") + " - " + rs.getString("gameGenre"));
-				panel.add(temp);
 			}
 		}catch (SQLException e1){
 			e1.printStackTrace();
@@ -188,10 +145,7 @@ public class GuiProgram extends JFrame{
 		loginPasswordBox = new JPasswordField(10);
 		loginButton = new JButton("Login");
 		signUpButton = new JButton("Sign-up");
-		searchGameName = new JButton("Search");
-		searchDeveloperName = new JButton("Search");
-		searchPlatformName = new JButton("Search");
-		
+		searchButton = new JButton("Search");
 		searchField = new JTextField(30);
 
 		

@@ -18,7 +18,6 @@ public class GuiProgram extends JFrame{
 	private JButton signUpButton;
 	private JButton searchGameName;
 	private JButton searchDeveloperName;
-	private JButton searchPlatformName;
 	
 	private JTextField searchField;
 	
@@ -190,8 +189,6 @@ public class GuiProgram extends JFrame{
 		signUpButton = new JButton("Sign-up");
 		searchGameName = new JButton("Search");
 		searchDeveloperName = new JButton("Search");
-		searchPlatformName = new JButton("Search");
-		
 		searchField = new JTextField(30);
 
 		

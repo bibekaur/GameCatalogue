@@ -191,7 +191,6 @@ public class GuiProgram extends JFrame{
 		searchGameName = new JButton("Search");
 		searchDeveloperName = new JButton("Search");
 		searchPlatformName = new JButton("Search");
-		
 		searchField = new JTextField(30);
 
 		

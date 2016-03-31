@@ -18,7 +18,6 @@ public class GuiProgram extends JFrame{
 	private JButton signUpButton;
 	private JButton searchGameName;
 	private JButton searchDeveloperName;
-	private JButton searchPlatformName;
 	
 	private JTextField searchField;
 	
@@ -105,7 +104,7 @@ public class GuiProgram extends JFrame{
 	    			String query = "SELECT gameName, gameGenre FROM game WHERE gameName LIKE '%" + search + "%'";
 	    			ResultSet rs = s.executeQuery(query);
 	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a game matching this query");
+	    				System.out.println("Could not find a game amatching this query");
 	    			}
 	    			else {
 	    				addGamesToPanel(rs);
@@ -190,8 +189,6 @@ public class GuiProgram extends JFrame{
 		signUpButton = new JButton("Sign-up");
 		searchGameName = new JButton("Search");
 		searchDeveloperName = new JButton("Search");
-		searchPlatformName = new JButton("Search");
-		
 		searchField = new JTextField(30);
 
 		
