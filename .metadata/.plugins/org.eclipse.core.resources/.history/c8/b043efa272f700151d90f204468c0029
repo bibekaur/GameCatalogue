@@ -136,7 +136,7 @@ public class GuiProgram extends JFrame{
 	    	}	    	
 	    });
 	    
-	    searchPlatformName.addActionListener(new ActionListener(){
+	    searchConsoleName.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		String search = searchField.getText();
 	    		System.out.println("Attempting to search for " + search);
