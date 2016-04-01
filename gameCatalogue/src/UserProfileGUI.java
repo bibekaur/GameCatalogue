@@ -16,6 +16,7 @@ public class UserProfileGUI extends JFrame{
 	
 	private String username;
 	private Integer userId;
+	private Integer loggedInUserId;
 	private String joinDate;
 	private boolean isModerator;
 	private Integer userRating;
@@ -54,7 +55,8 @@ public class UserProfileGUI extends JFrame{
 	}
 
 	
-	public JPanel getPanel(Integer loggedInUserId){
+	public JPanel getPanel(Integer loggedIn){
+		loggedInUserId = loggedIn;
 		panel = new JPanel();
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
 				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
@@ -81,35 +83,57 @@ public class UserProfileGUI extends JFrame{
 			panel.add(rate);
 			layout.putConstraint(SpringLayout.WEST, rateText, 100, SpringLayout.EAST, userInfo);
 			layout.putConstraint(SpringLayout.WEST, rate, 2, SpringLayout.EAST, rateText);
+					
 			
 			
 			rate.addActionListener(new ActionListener(){
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					//Get the user rating input
+					Integer rating = -1;
 					try {
-						Integer rating = Integer.parseInt(rateText.getText());
+						rating = Integer.parseInt(rateText.getText());
 						if (rating > 10 || rating < 1){
+							rating = -1;
 							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
-						}
-						else {
-							userRating = rating;
-							try{
-								Statement s = con.createStatement();
-								String query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + userRating + ")";
-								s.executeQuery(query);
-							}
-							catch (SQLException e1){
-								e1.printStackTrace();
-							}
 						}
 											
 					} catch(NumberFormatException e){
+						rating = -1;
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
 					}
-								
+
+					if (rating != -1){
+						try{
+							Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					                 ResultSet.CONCUR_UPDATABLE);
+							
+							//Check if we've already rated this user
+							String query = "SELECT rating from rate WHERE rater_userId = " + loggedInUserId + "AND rated_userId = " + userId;
+							ResultSet rs = s.executeQuery(query);
+							
+							if (rs.next()){ //We've already rated them, update the entry
+								Integer oldRating = rs.getInt(1);
+								rs.updateInt(1, rating);
+								rs.updateRow();
+								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), 
+										"You updated " + username + "'s rating from " + oldRating + " to "  + rating);
+	
+							}
+							else {
+								query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + userRating + ")";
+								s.executeUpdate(query);
+								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You gave " + username+ " a " + userRating + " rating!");
+							}
+							
+						}
+						catch (SQLException e1){
+							e1.printStackTrace();
+						}
+					}
 				}
-				
+											
 			});
 		}
 		return panel;
