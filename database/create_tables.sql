@@ -15,8 +15,6 @@ drop sequence seq_game;
 drop sequence seq_platform;
 drop sequence seq_review;
 
-
-
 CREATE TABLE users
 ( userId INTEGER NOT NULL PRIMARY KEY,
 username VARCHAR(20) NOT NULL,
@@ -179,6 +177,18 @@ values (DEFAULT, 'Bastion', 'Action role-playing');
 insert into game
 values (DEFAULT, 'Recettear: An Item Shop''s Tale', 'Action role-playing, business simulation');
 
+insert into game
+values (DEFAULT, 'Fire Emblem: Conquest', 'Strategy role-playing');
+
+insert into game
+values (DEFAULT, 'Fire Emblem: Birthright', 'Strategy role-playing');
+
+insert into game
+values (DEFAULT, 'Pokemon Omega Ruby', 'Role-playing game');
+
+insert into game
+values (DEFAULT, 'Pokemon Aqua Sapphire', 'Role-playing game');
+
 insert into platform
 values (DEFAULT, 'PC', null, null);
 
@@ -187,6 +197,9 @@ values (DEFAULT, 'Xbox 360', 249.99, '2005-11-22');
 
 insert into platform
 values (DEFAULT, 'PlayStation 4', 429.99, '2013-11-15');
+
+insert into platform 
+values (DEFAULT, 'Nintendo 3DS', 199.99, '2011-03-27');
 
 insert into developer
 values (DEFAULT, 'Thekla, Inc.', null);
@@ -206,6 +219,12 @@ values (DEFAULT, 'FromSoftware', '2009-09-01');
 insert into developer
 values (DEFAULT, 'tobyfox', null);
 
+insert into developer
+values (DEFAULT, 'Intelligent Systems', '1986-12-01');
+
+insert into developer
+values (DEFAULT, 'Game Freak', '1989-04-26');
+
 insert into developed
 values (1, 1);
 
@@ -223,6 +242,18 @@ values (5, 4);
 
 insert into developed
 values (6, 2);
+
+insert into developed 
+values (7, 7);
+
+insert into developed
+values (8, 7);
+
+insert into developed
+values (9, 8);
+
+insert into developed
+values (10, 8);
 
 insert into available
 values (1, 1, 43.99, '2016-01-26');
@@ -244,3 +275,15 @@ values (5, 1, 14.99, '2011-07-16');
 
 insert into available
 values (6, 1, 21.99, '2010-09-10');
+
+insert into available
+values (7, 4, 39.99, '2016-02-19');
+
+insert into available
+values (8, 4, 39.99, '2016-02-19');
+
+insert into available
+values (9, 4, 39.99, '2014-11-21');
+
+insert into available
+values (10, 4, 39.99, '2014-11-21');

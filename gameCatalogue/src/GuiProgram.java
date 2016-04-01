@@ -11,7 +11,8 @@ public class GuiProgram extends JFrame{
 	private Connection con;
 	
 	private JFrame frame;
-	private JPanel panel;
+	private JPanel mainPanel;
+	private JPanel resultsPanel;
 	private JTextField loginNameBox;
 	private JTextField loginPasswordBox;
 	private JButton loginButton;
@@ -20,6 +21,8 @@ public class GuiProgram extends JFrame{
 	private JButton searchDeveloperName;
 	private JButton searchPlatformName;
 	private JButton searchGameViaDeveloper;
+	private String[] options = {"Game", "Platform", "Developer"};
+	private JComboBox<String> searchOptions;
 	
 	private JTextField searchField;
 	
@@ -30,11 +33,12 @@ public class GuiProgram extends JFrame{
 	}
 	
 	public void drawLoggedInScreen(){
-		frame.remove(panel);
-		panel = new JPanel();
-		panel.add(searchField);
-		panel.add(searchGameName);
-		frame.setContentPane(panel);
+		frame.remove(mainPanel);
+		mainPanel = new JPanel();
+		mainPanel.add(searchField);
+		mainPanel.add(searchOptions);
+		mainPanel.add(searchGameName);
+		frame.setContentPane(mainPanel);
 		frame.revalidate();
 		frame.repaint();;
 	}
@@ -100,65 +104,42 @@ public class GuiProgram extends JFrame{
 	    searchGameName.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		String search = searchField.getText();
+	    		String option = (String) searchOptions.getSelectedItem();
 	    		System.out.println("Attempting to search for " + search);
 	    		try {
-	    			Statement s = con.createStatement();
-	    			String query = "SELECT gameName, gameGenre, pName"
-	    					+ " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
-	    					+ " INNER JOIN platform p ON a.pId = p.pId"
-	    					+ " WHERE gameName LIKE '%" + search + "%'";
-	    			ResultSet rs = s.executeQuery(query);
-	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a game matching this query");
-	    			}
-	    			else {
-	    				addGamesToPanel(rs);
+	    			if (!search.isEmpty()){
+		    			Statement s = con.createStatement();
+		    			String query;
+		    			if (option.contentEquals("Game")){
+			    			query = "SELECT gameName, gameGenre, pName"
+			    					+ " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
+			    					+ " INNER JOIN platform p ON a.pId = p.pId"
+			    					+ " WHERE gameName LIKE '%" + search + "%'";
+		    			}
+		    			else if (option.contentEquals("Platform")){
+			    			query = "SELECT pName, cost, releaseDate "
+			    					+ "FROM platform "
+			    					+ "WHERE pName LIKE '%" + search + "%'";
+		    			}
+		    			else {
+			    			query = "SELECT dName "
+			    					+ "FROM developer "
+			    					+ "WHERE dName LIKE '%" + search + "%'";
+		    			}
+		    			ResultSet rs = s.executeQuery(query);
+		    			if (!rs.isBeforeFirst()){
+		    				System.out.println("Could not find a game matching this query");
+		    			}
+		    			else {
+		    				addGamesToPanel(rs);
+		    			}
 	    			}
 	    		} catch (SQLException e1){
 	    			e1.printStackTrace();
 	    		}
 	    	}
 	    });
-	    
-	    searchDeveloperName.addActionListener(new ActionListener(){
-	    	public void actionPerformed(ActionEvent e){
-	    		String search = searchField.getText();
-	    		System.out.println("Attempting to search for " + search);
-	    		try {
-	    			Statement s = con.createStatement();
-	    			String query = "SELECT dName FROM developer WHERE dName LIKE '%" + search + "%'";
-	    			ResultSet rs = s.executeQuery(query);
-	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a developer matching this query");
-	    			}
-	    			else {
-	    				addGamesToPanel(rs);
-	    			}
-	    		} catch (SQLException e1){
-	    			e1.printStackTrace();
-	    		}
-	    	}	    	
-	    });
-	    
-	    searchPlatformName.addActionListener(new ActionListener(){
-	    	public void actionPerformed(ActionEvent e){
-	    		String search = searchField.getText();
-	    		System.out.println("Attempting to search for " + search);
-	    		try {
-	    			Statement s = con.createStatement();
-	    			String query = "SELECT pName, cost, releaseDate FROM platform WHERE pName LIKE '%" + search + "%'";
-	    			ResultSet rs = s.executeQuery(query);
-	    			if (!rs.isBeforeFirst()){
-	    				System.out.println("Could not find a platform matching this query");
-	    			}
-	    			else {
-	    				addGamesToPanel(rs);
-	    			}
-	    		} catch (SQLException e1){
-	    			e1.printStackTrace();
-	    		}
-	    	}	    	
-	    });
+	    //Probably we'll use this query on the developer page?
 	    searchGameViaDeveloper.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		String search = searchField.getText();
@@ -181,21 +162,52 @@ public class GuiProgram extends JFrame{
 	    		}
 	    	}	       	
 	    });
+	    
+	    //Query to find game by platform
+	    /*String query = "SELECT gameName, gameGenre "
+	    		+ "FROM game g INNER JOIN available a ON g.gameId = a.gameId "
+	    		+ "INNER JOIN platform p ON a.pId = p.pId "
+	    		+ "WHERE p.pName LIKE '%" + "query" + "%;";*/
+	    
+	    //Query to find game by average rating?
+	    /*String query = "SELECT gameName, gameGenre, avg_rating"
+	    		+ "FROM (SELECT gameName, gameGenre, AVG(rating) AS avg_rating"
+	    		+ "FROM game g INNER JOIN review r ON g.gameId = r.gameId"
+	    		+ "GROUP BY g.gameId)"
+	    		+ "WHERE avg_rating > " + 5;*/
 	}
 	
 	public void addGamesToPanel(ResultSet rs){
+		if (resultsPanel.getComponents() != null){
+			resultsPanel.removeAll();
+		}
+		
+		resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.PAGE_AXIS));
 		try{
-			while(rs.next()){
-				//This is going to break rn if you try to print out other things
-				//That don't have those columns
-				//We need to make it a bit more generic?
-				//Or we could be lazy and just make one for each type \:D/
-				JLabel temp = new JLabel(rs.getString("gameName") + " - " + rs.getString("gameGenre") + " - " + rs.getString("pName"));
-				panel.add(temp);
+			int columnCount = rs.getMetaData().getColumnCount();
+			
+			while(rs.next()){				
+				String s = "";
+				
+				for (int i = 1; i <= columnCount; i++){
+					if (i != columnCount){
+						s += rs.getString(i) + " - ";
+					}
+					else {
+						s+= rs.getString(i);
+					}
+				}
+				s+="\n";
+				JLabel temp = new JLabel(s);
+				resultsPanel.add(temp);
+				
 			}
 		}catch (SQLException e1){
 			e1.printStackTrace();
 		}
+		mainPanel.add(resultsPanel);
+		frame.revalidate();
+		frame.repaint();
 	}
 			
 	
@@ -210,7 +222,8 @@ public class GuiProgram extends JFrame{
 	    
 		
 		frame = new GuiProgram();
-		panel = new JPanel();
+		mainPanel = new JPanel();
+		resultsPanel = new JPanel();
 
 		final JLabel loginName = new JLabel("Login NAME: ");
 		loginNameBox = new JTextField(10);
@@ -222,18 +235,19 @@ public class GuiProgram extends JFrame{
 		searchDeveloperName = new JButton("Search");
 		searchPlatformName = new JButton("Search");
 		searchGameViaDeveloper = new JButton("Search");
+		searchOptions = new JComboBox<String>(options);
 		
 		searchField = new JTextField(30);
 
 		
-		panel.add(loginName);
-		panel.add(loginNameBox);
-		panel.add(loginPassword);
-		panel.add(loginPasswordBox);
-		panel.add(loginButton);
-		panel.add(signUpButton);
+		mainPanel.add(loginName);
+		mainPanel.add(loginNameBox);
+		mainPanel.add(loginPassword);
+		mainPanel.add(loginPasswordBox);
+		mainPanel.add(loginButton);
+		mainPanel.add(signUpButton);
 
-		frame.setContentPane(panel);
+		frame.setContentPane(mainPanel);
 		frame.setLayout(new FlowLayout());
 		frame.setResizable(true);
 	    frame.setVisible(true);
