@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 
 public class UserProfileGUI extends JFrame{
@@ -57,6 +58,9 @@ public class UserProfileGUI extends JFrame{
 	
 	public JPanel getPanel(Integer loggedIn){
 		loggedInUserId = loggedIn;
+		ArrayList<StoreData> owns = new ArrayList<StoreData>();
+		ArrayList<StoreData> wish = new ArrayList<StoreData>();
+		
 		panel = new JPanel();
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
 				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
@@ -74,6 +78,49 @@ public class UserProfileGUI extends JFrame{
 		layout.putConstraint(SpringLayout.NORTH, owned, 2, SpringLayout.SOUTH, userInfo);
 		
 		panel.setLayout(layout);
+		
+		try{
+			Statement s = con.createStatement();
+			String query = "SELECT g.gameName, g.gameGenre, o.rating, o.since FROM owns o, game g WHERE o.userId = '" + userId + "' AND o.gameId = g.gameId";
+			ResultSet rs = s.executeQuery(query);
+			while (rs.next()) {    
+				 String gameName = rs.getString(1); 
+				 String gameGenre = rs.getString(2);
+				 Integer rating = rs.getInt(3);
+				 String since = rs.getString(4);
+				 owns.add(new StoreData(gameName, gameGenre, rating, since, new JButton("Game: "+gameName+" : "+gameGenre),
+						                new JTextArea("Rated: "+rating.toString()+" On "+since)));
+				 
+				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
+			} 
+		}
+		catch (SQLException e1){
+			e1.printStackTrace();
+		}
+		
+		owned.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for (StoreData sd : wish) {
+					panel.remove(sd.getButton());
+					panel.remove(sd.getText());
+				}
+				panel.add(owns.get(0).getButton());
+				panel.add(owns.get(0).getText());
+				layout.putConstraint(SpringLayout.NORTH, owns.get(0).getText(), 1, SpringLayout.SOUTH, owns.get(0).getButton());
+				
+				layout.putConstraint(SpringLayout.NORTH, owns.get(0).getButton(), 4, SpringLayout.SOUTH, wishList);
+				
+				for (int i=1; i< owns.size(); i++) {
+					panel.add(owns.get(i).getButton());
+					panel.add(owns.get(i).getText());
+					layout.putConstraint(SpringLayout.NORTH, owns.get(i).getText(), 1, SpringLayout.SOUTH, owns.get(i).getButton());
+					
+					layout.putConstraint(SpringLayout.NORTH, owns.get(i).getButton(), 4, SpringLayout.SOUTH, owns.get(i-1).getText());
+				}
+			}
+		});
 		
 		if (!userId.equals(loggedInUserId)) {
 
