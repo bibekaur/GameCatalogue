@@ -21,18 +21,18 @@ public class UserProfileGUI extends JFrame{
 	private boolean isModerator;
 	private Integer userRating;
 	
-	public UserProfileGUI(Connection sqlConnection, String user){
+	public UserProfileGUI(Connection sqlConnection, Integer user){
 		con = sqlConnection;
-		username = user;
+		userId = user;
 		
-		//get the user id
+		//get the user details
 		try{
 			Statement s = con.createStatement();
-			String query = "SELECT * FROM users WHERE username = '" + username + "'";
+			String query = "SELECT * FROM users WHERE userId = '" + userId + "'";
 			ResultSet rs = s.executeQuery(query);
 			
 			while (rs.next()){
-				userId = rs.getInt(1);
+				username = rs.getString(2);
 				joinDate = rs.getString(4).toString();
 				isModerator = rs.getString(5).equals('1');
 			}

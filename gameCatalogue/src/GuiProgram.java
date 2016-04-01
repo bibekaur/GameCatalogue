@@ -38,7 +38,7 @@ public class GuiProgram extends JFrame{
 	public void drawLoggedInScreen(){
 		frame.remove(panel);
 		
-		userGUI = new UserProfileGUI(con, "user2");
+		userGUI = new UserProfileGUI(con, 3);
 		panel = userGUI.getPanel(loggedInUserId);
 		//panel.add(searchField);
 		//panel.add(searchButton);
