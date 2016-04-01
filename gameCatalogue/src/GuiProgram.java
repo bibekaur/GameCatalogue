@@ -18,6 +18,8 @@ public class GuiProgram extends JFrame{
 	private JPanel GamePanel;
 	private String loginName;
     private String loginPassword;
+    private Integer loggedInUserId;
+    
 	
 	private JTextField loginNameBox;
 	private JTextField loginPasswordBox;
@@ -36,8 +38,8 @@ public class GuiProgram extends JFrame{
 	public void drawLoggedInScreen(){
 		frame.remove(panel);
 		
-		userGUI = new UserProfileGUI(con, loginName);
-		panel = userGUI.getPanel("user2");
+		userGUI = new UserProfileGUI(con, "user2");
+		panel = userGUI.getPanel(loggedInUserId);
 		//panel.add(searchField);
 		//panel.add(searchButton);
 		frame.setContentPane(panel);
@@ -59,13 +61,14 @@ public class GuiProgram extends JFrame{
 					
 					try {
 						Statement s = con.createStatement();
-						String query = "SELECT username, password FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
+						String query = "SELECT * FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
 						//Below line checks if it exists or not
 						ResultSet rs = s.executeQuery(query);
 						if (!rs.next() ) {    
 							 System.out.println("No username/password combo found"); 
 						} 
 						else {
+							loggedInUserId = rs.getInt(1);
 							drawLoggedInScreen();	
 						}
 					} catch (SQLException e1) {

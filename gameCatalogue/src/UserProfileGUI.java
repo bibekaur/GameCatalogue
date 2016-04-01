@@ -54,7 +54,7 @@ public class UserProfileGUI extends JFrame{
 	}
 
 	
-	public JPanel getPanel(String loggedInUser){
+	public JPanel getPanel(Integer loggedInUserId){
 		panel = new JPanel();
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString());
 		JButton wishList = new JButton("User Wish List");
@@ -64,19 +64,43 @@ public class UserProfileGUI extends JFrame{
 		panel.add(wishList);
 		panel.add(owned);
 		
-		if (!username.equals(loggedInUser)) {
+		
+		
+		
+		if (!userId.equals(loggedInUserId)) {
 			JTextField rateText = new JTextField(2);
 			JButton rate = new JButton("Rate");
 			panel.add(rateText);
 			panel.add(rate);
 			
+			//TODO: Check if this user has already rated this person
+			
+			
 			rate.addActionListener(new ActionListener(){
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					Integer rating = rateText.getText().;
-					
+					try {
+						Integer rating = Integer.parseInt(rateText.getText());
+						if (rating > 10 || rating < 1){
+							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+						}
+						else {
+							userRating = rating;
+							try{
+								Statement s = con.createStatement();
+								String query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + userRating + ")";
+								s.executeQuery(query);
+							}
+							catch (SQLException e1){
+								e1.printStackTrace();
+							}
+						}
+											
+					} catch(NumberFormatException e){
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+					}
+								
 				}
 				
 			});
