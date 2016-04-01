@@ -59,17 +59,19 @@ public class UserProfileGUI extends JFrame{
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
 				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
 		JButton wishList = new JButton("User Wish List");
-		JButton owned = new JButton("User Owned Games");		
-
-		SpringLayout layout = new SpringLayout();
-		layout.putConstraint(SpringLayout.SOUTH, userInfo, 2, SpringLayout.NORTH, wishList);
-		layout.putConstraint(SpringLayout.WEST, wishList, 50, SpringLayout.EAST, owned);
-		
-		panel.setLayout(layout);
-		
+		JButton owned = new JButton("User Owned Games");
 		panel.add(userInfo);
+		
 		panel.add(wishList);
 		panel.add(owned);
+		
+
+		SpringLayout layout = new SpringLayout();
+		layout.putConstraint(SpringLayout.NORTH, wishList, 2, SpringLayout.SOUTH, userInfo);
+		layout.putConstraint(SpringLayout.WEST, owned, 50, SpringLayout.EAST, wishList);
+		layout.putConstraint(SpringLayout.NORTH, owned, 2, SpringLayout.SOUTH, userInfo);
+		
+		panel.setLayout(layout);
 		
 		if (!userId.equals(loggedInUserId)) {
 
@@ -77,8 +79,8 @@ public class UserProfileGUI extends JFrame{
 			JButton rate = new JButton("Rate");
 			panel.add(rateText);
 			panel.add(rate);
-			
-			//TODO: Check if this user has already rated this person
+			layout.putConstraint(SpringLayout.WEST, rateText, 100, SpringLayout.EAST, userInfo);
+			layout.putConstraint(SpringLayout.WEST, rate, 2, SpringLayout.EAST, rateText);
 			
 			
 			rate.addActionListener(new ActionListener(){
