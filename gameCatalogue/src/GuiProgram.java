@@ -12,6 +12,13 @@ public class GuiProgram extends JFrame{
 	
 	private JFrame frame;
 	private JPanel panel;
+	
+	private UserProfileGUI userGUI;
+	private JPanel UserPanel;
+	private JPanel GamePanel;
+	private String loginName;
+    private String loginPassword;
+	
 	private JTextField loginNameBox;
 	private JTextField loginPasswordBox;
 	private JButton loginButton;
@@ -28,9 +35,11 @@ public class GuiProgram extends JFrame{
 	
 	public void drawLoggedInScreen(){
 		frame.remove(panel);
-		panel = new JPanel();
-		panel.add(searchField);
-		panel.add(searchButton);
+		
+		userGUI = new UserProfileGUI(con, loginName);
+		panel = userGUI.getPanel("user2");
+		//panel.add(searchField);
+		//panel.add(searchButton);
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();;
@@ -41,8 +50,8 @@ public class GuiProgram extends JFrame{
 		
 	    loginButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) { 
-			    String loginName = loginNameBox.getText();
-			    String loginPassword = loginPasswordBox.getText();
+			    loginName = loginNameBox.getText();
+			    loginPassword = loginPasswordBox.getText();
 			    System.out.println("logged in as "+loginName+" with password: "+loginPassword);
 			    if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
 			    	//TODO See if the user exists from the database
@@ -68,8 +77,8 @@ public class GuiProgram extends JFrame{
 	    });
 	    signUpButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) { 
-				String loginName = loginNameBox.getText();
-				String loginPassword = loginPasswordBox.getText();
+				loginName = loginNameBox.getText();
+				loginPassword = loginPasswordBox.getText();
 				System.out.println("signed up as "+loginName+" with password: "+loginPassword);
 				if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
 					//TODO add user info in the database
@@ -119,7 +128,7 @@ public class GuiProgram extends JFrame{
 	    try{
 	    	DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 	    	//Change the below line to match your oracle username/password
-	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_i2m8", "a92859115");
+	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2n8", "a39088125");
 	    }catch(Exception e){
 	    	e.printStackTrace();
 	    }
