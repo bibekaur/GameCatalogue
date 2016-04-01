@@ -56,13 +56,20 @@ public class UserProfileGUI extends JFrame{
 	
 	public JPanel getPanel(String loggedInUser){
 		panel = new JPanel();
-		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString());
+		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
+				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
 		JButton wishList = new JButton("User Wish List");
 		JButton owned = new JButton("User Owned Games");
 		panel.add(userInfo);
 		
 		panel.add(wishList);
 		panel.add(owned);
+		
+		SpringLayout layout = new SpringLayout();
+		layout.putConstraint(SpringLayout.SOUTH, userInfo, 2, SpringLayout.NORTH, wishList);
+		layout.putConstraint(SpringLayout.WEST, wishList, 50, SpringLayout.EAST, owned);
+		
+		panel.setLayout(layout);
 		
 		if (!username.equals(loggedInUser)) {
 			JTextField rateText = new JTextField(2);
