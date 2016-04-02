@@ -16,7 +16,12 @@ public class GameInfoGUI extends JFrame{
 	private Integer gameId;
 	private String gameName;
 	private String gameGenre;
-	private Integer rating = 0;
+	private Integer averageRating = 0;
+	
+	private boolean isOwned;
+	private boolean isWishlist;
+	private Integer ownedRating;
+	private Integer wishlistRating;
 	
 	private JPanel panel;
 	
@@ -40,21 +45,25 @@ public class GameInfoGUI extends JFrame{
 			e1.printStackTrace();
 		}
 		
+		checkIfOwned();
+		checkInWishlist();
+		
 		//TODO: Check if the user is a moderator
 		
 		//TODO: Get the average rating
 	}
 	
-	//Check if the user owns this game, return the rating if so
-	//Return -1 otherwise
-	private Integer checkIfOwned(){
+
+	private void checkIfOwned(){
 		try {
 			Statement s = con.createStatement();
-			String query = "SELECT rating from owns WHERE userId=" + loggedInUserId + " AND gameId=" + gameId;
+			String query = "SELECT * from owns WHERE userId=" + loggedInUserId + " AND gameId=" + gameId;
 			ResultSet rs = s.executeQuery(query);
 			
 			if (rs.next()){
-				return rs.getInt("rating");
+				isOwned = true;
+				ownedRating = rs.getInt("rating");
+				return;
 			}
 			
 			
@@ -62,12 +71,12 @@ public class GameInfoGUI extends JFrame{
 			e1.printStackTrace();
 		}
 		
-		return -1;
+		isOwned = false;
+		
 	}
 
-	//Check if the game is in the user's wishlist, return the rank if so
-	//Return -1 if not in wishlist
-	private Integer checkInWishlist(){
+
+	private void checkInWishlist(){
 
 		try{
 			Statement s = con.createStatement();
@@ -75,39 +84,104 @@ public class GameInfoGUI extends JFrame{
 			ResultSet rs = s.executeQuery(query);
 			
 			if (rs.next()){
-				return rs.getInt("rating");
+				isWishlist = true;
+				wishlistRating = rs.getInt("rating");
+				return;
 			}
 			
 		}catch (SQLException e1){
 			e1.printStackTrace();
 		}
 		
-		return -1;
+		isWishlist = false;
 		
 	}
+
+	
+	private void addRateButtonListener(JButton rateButton, JTextField rateText){
+		rateButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//Get the user rating input
+				Integer rating = -1;
+				try {
+					rating = Integer.parseInt(rateText.getText());
+					if (rating > 10 || rating < 1){
+						rating = -1;
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+					}
+										
+				} catch(NumberFormatException e){
+					rating = -1;
+					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+				}
+
+				if (rating != -1){
+					try{
+						Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+				                 ResultSet.CONCUR_UPDATABLE);
+						//TODO: apparnetly need to use check statement, also display what the rating is using a label
+						//Check if we've already rated this user
+						String query = "SELECT userId, rating from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
+						ResultSet rs = s.executeQuery(query);
+						if (rs.next()){
+							rs.updateInt("rating", rating);
+							rs.updateRow();
+							ratingLabel.setText("You rated this game " + rating);
+						}
+						else {
+							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You must own this game to rate it!");
+						}
+						
+						
+					}
+					catch (SQLException e1){
+						e1.printStackTrace();
+					}
+				}
+			}
+										
+		});
+	}
+	
+//	private void addOwnButtonListener(JButton ownButton){
+//		ownButton.addActionListener(new);
+//	}
 	
 	public void setPanel(JFrame frame){
 		panel = new JPanel();
 		JTextArea gameInfo = new JTextArea("Name: " + gameName + "\n"
-				+ "Average rating: " + rating + "\n"
+				+ "Average rating: " + averageRating + "\n"
 				+ "Game genre: " + gameGenre + "\n");
+
 		
-		Integer rating = checkIfOwned();
-		if (rating == -1){
-			Integer ranking = checkInWishlist();
+		if (!isOwned){
 			ratingLabel = new JLabel("You must own this game to rate it");
 		}
 		else {
-			ratingLabel = new JLabel("You rated this game "+ rating);
-		}
-		
-		
+			ratingLabel = new JLabel("You rated this game " + ownedRating);
+			
+		}	
 		
 		JTextField rateText = new JTextField(2);
 		JButton rate = new JButton("Rate"); 
+		addRateButtonListener(rate, rateText);
+		
+		//"I own this game" button that inserts, then updates the label
+		JButton ownButton = new JButton("I own this game");
+		//addOwnButtonListener(ownButton);
 		
 		
+		
+		//"Add this game to my wishlist" button, ONLY works if we don't own the game
+		//Add a label that shows the rank of the game
+		
+		panel.add(ownButton);
+		panel.add(rate);
+		panel.add(rateText);
 		panel.add(gameInfo);
+		panel.add(ratingLabel);
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();
