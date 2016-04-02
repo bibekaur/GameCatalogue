@@ -114,22 +114,30 @@ public class GuiProgram extends JFrame{
 			    			query = "SELECT gameName, gameGenre, pName"
 			    					+ " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
 			    					+ " INNER JOIN platform p ON a.pId = p.pId"
-			    					+ " WHERE gameName LIKE '%" + search + "%'";
+			    					+ " WHERE UPPER(gameName) LIKE UPPER('%" + search + "%')";
 		    			}
 		    			else if (option.contentEquals("Platform")){
 			    			query = "SELECT pName, cost, releaseDate "
 			    					+ "FROM platform "
-			    					+ "WHERE pName LIKE '%" + search + "%'";
+			    					+ "WHERE UPPER(pName) LIKE UPPER('%" + search + "%')";
 		    			}
 		    			else {
 			    			query = "SELECT dName "
 			    					+ "FROM developer "
-			    					+ "WHERE dName LIKE '%" + search + "%'";
+			    					+ "WHERE UPPER(dName) LIKE UPPER('%" + search + "%')";
 		    			}
 		    			ResultSet rs = s.executeQuery(query);
 		    			if (!rs.isBeforeFirst()){
 		    				System.out.println("Could not find a game matching this query");
-		    			}
+		    				if (resultsPanel.getComponents() != null){
+		    					resultsPanel.removeAll();
+		    				}
+		    				JLabel temp = new JLabel("No results found.");
+		    				resultsPanel.add(temp);
+		    				mainPanel.add(resultsPanel);
+		    				frame.revalidate();
+		    				frame.repaint();
+		    				System.out.println("?");		    			}
 		    			else {
 		    				addGamesToPanel(rs);
 		    			}
@@ -149,10 +157,19 @@ public class GuiProgram extends JFrame{
 	    			String query = "SELECT gameName, gameGenre "
 	    					+ "FROM game g INNER JOIN developed d ON g.gameId = d.gameId "
 	    					+ "INNER JOIN developer d2 ON d.dId = d2.dId"
-	    					+ " WHERE d2.dName LIKE '%" + search + "%'";
+	    					+ " WHERE UPPER(d2.dName) LIKE UPPER('%" + search + "%')";
 	    			ResultSet rs = s.executeQuery(query);
 	    			if (!rs.isBeforeFirst()){
 	    				System.out.println("Could not find a game matching this query");
+	    				if (resultsPanel.getComponents() != null){
+	    					resultsPanel.removeAll();
+	    				}
+	    				JLabel temp = new JLabel("No results found.");
+	    				resultsPanel.add(temp);
+	    				mainPanel.add(resultsPanel);
+	    				frame.revalidate();
+	    				frame.repaint();
+	    				System.out.println("?");
 	    			}
 	    			else {
 	    				addGamesToPanel(rs);
@@ -175,6 +192,38 @@ public class GuiProgram extends JFrame{
 	    		+ "FROM game g INNER JOIN review r ON g.gameId = r.gameId"
 	    		+ "GROUP BY g.gameId)"
 	    		+ "WHERE avg_rating > " + 5;*/
+	    
+	    //Query to find the top 10 best games
+//	    String query = "SELECT gameName, gameGenre, avg_rating"
+//	    		+ "FROM (SELECT gameName, gameGenre, AVG(rating) AS avg_rating"
+//	    		+ "FROM game g INNER JOIN review r ON g.gameId = r.gameId"
+//	    		+ "GROUP BY g.gameId) "
+//	    		+ "ORDER BY avg_rating LIMIT 10";
+	    
+	    //Query to find the top 10 best rated users -- this needs some testing
+//	    String query = "SELECT username, avg_rating"
+//	    		+ "FROM (SELECT username, AVG(rating) AS avg_rating"
+//	    		+ "FROM users u INNER JOIN rate r ON u.userId = r.rated_userId"
+//	    		+ "GROUP BY u.username)"
+//	    		+ "ORDER BY avg_rating LIMIT 10";
+	    
+	    //Query to find games played by the top 10 reated users
+//	    String query = "SELECT gameName, gameGenre "
+//	    		+ "FROM game g INNER JOIN owns o ON g.gameId = o.gameId"
+//	    		+ "WHERE o.userId IN (SELECT userId"
+//	    		+ "FROM (SELECT username, userId, AVG(rating) AS avg_rating"
+//	    		+ "FROM users u INNER JOIN rate r ON u.userId = r.rated_userId"
+//	    		+ "GROUP BY u.username)"
+//	    		+ "ORDER BY avg_rating LIMIT 10)";	    
+	    
+	    //Select games that are owned by everybody
+	    //This SHOULD be division.
+	    String query = "SELECT gameName, gameGenre "
+	    		+ "FROM game g INNER JOIN owns o ON g.gameId = o.gameId"
+	    		+ "WHERE o.userID in (SELECT userID"
+	    		+ "FROM users u)"
+	    		+ "GROUP BY gameName"
+	    		+ "HAVING COUNT(*) = (SELECT COUNT(*) FROM users)";
 	}
 	
 	public void addGamesToPanel(ResultSet rs){
