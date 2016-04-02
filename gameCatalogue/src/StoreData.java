@@ -9,7 +9,8 @@ public class StoreData {
 	private JButton button;
 	private JTextArea text;
 	
-	public StoreData(String gameName, String gameGenre, Integer rating, String date, JButton button, JTextArea text) {
+	public StoreData(Integer gameId, String gameName, String gameGenre, Integer rating, String date, JButton button, JTextArea text) {
+        this.gameId = gameId;
 		this.gameName = gameName;
 		this.gameGenre = gameGenre;
 		this.rating = rating;
@@ -18,6 +19,9 @@ public class StoreData {
 		this.text = text;
 	}
 	
+	public Integer getGameId() {
+		return this.gameId;
+	}
 	public String getGameName() {
 		return this.gameName;
 	}
