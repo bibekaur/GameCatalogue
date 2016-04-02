@@ -14,6 +14,7 @@ public class GuiProgram extends JFrame{
 	private JPanel panel;
 	
 	private UserProfileGUI userGUI;
+	private GameInfoGUI gameGUI;
 	private JPanel UserPanel;
 	private JPanel GamePanel;
 	private String loginName;
@@ -37,9 +38,10 @@ public class GuiProgram extends JFrame{
 	
 	public void drawLoggedInScreen(){
 		frame.remove(panel);
-		
-		userGUI = new UserProfileGUI(con, 3);
-		userGUI.setPanel(loggedInUserId, frame);
+		gameGUI = new GameInfoGUI(3, loggedInUserId, con);
+		gameGUI.setPanel(frame);
+		//userGUI = new UserProfileGUI(con, 3);
+		//userGUI.setPanel(loggedInUserId, frame);
 		//panel.add(searchField);
 		//panel.add(searchButton);
 

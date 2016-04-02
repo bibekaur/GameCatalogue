@@ -166,7 +166,7 @@ public class UserProfileGUI extends JFrame{
 						try{
 							Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					                 ResultSet.CONCUR_UPDATABLE);
-							
+							//TODO: apparnetly need to use check statement, also display what the rating is using a label
 							//Check if we've already rated this user
 							String query = "SELECT rating from rate WHERE rater_userId = " + loggedInUserId + "AND rated_userId = " + userId;
 							ResultSet rs = s.executeQuery(query);
