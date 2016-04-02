@@ -50,9 +50,6 @@ public class UserProfileGUI extends JFrame{
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		
-		
-		
 	}
 
 	
@@ -100,17 +97,36 @@ public class UserProfileGUI extends JFrame{
 			e1.printStackTrace();
 		}
 		
-		owned.addActionListener(new ActionListener(){
+		wishList.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				for (StoreData sd : wish) {
-					System.out.println("Wish: "+sd.getGameName()+" : "+sd.getButton());
-				}
+			public void actionPerformed(ActionEvent arg0) {				
 				for (StoreData sd : owns) {
-					System.out.println("Own: "+sd.getGameName()+" : "+sd.getButton()+" : "+sd.getText());
+					panel.remove(sd.getButton());
+					panel.remove(sd.getText());
 				}
+				panel.add(wish.get(0).getButton());
+				panel.add(wish.get(0).getText());
+				layout.putConstraint(SpringLayout.NORTH, wish.get(0).getText(), 1, SpringLayout.SOUTH, wish.get(0).getButton());
 				
+				layout.putConstraint(SpringLayout.NORTH, wish.get(0).getButton(), 4, SpringLayout.SOUTH, wishList);
+				
+				for (int i=1; i< wish.size(); i++) {
+					panel.add(wish.get(i).getButton());
+					panel.add(wish.get(i).getText());
+					layout.putConstraint(SpringLayout.NORTH, wish.get(i).getText(), 1, SpringLayout.SOUTH, wish.get(i).getButton());
+					
+					layout.putConstraint(SpringLayout.NORTH, wish.get(i).getButton(), 4, SpringLayout.SOUTH, wish.get(i-1).getText());
+				}
+				frame.revalidate();
+				frame.repaint();
+			}
+		});
+        
+        owned.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
 				for (StoreData sd : wish) {
 					panel.remove(sd.getButton());
 					panel.remove(sd.getText());
