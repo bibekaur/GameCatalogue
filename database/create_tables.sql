@@ -205,3 +205,15 @@ values (DEFAULT, 'FromSoftware', '2009-09-01');
 
 insert into developer
 values (DEFAULT, 'tobyfox', null);
+
+insert into owns
+values (3, 1, CURRENT_TIMESTAMP, 5);
+
+insert into owns
+values (3, 2, CURRENT_TIMESTAMP, 6);
+
+insert into owns
+values (3, 4, CURRENT_TIMESTAMP, 9);
+
+insert into owns
+values (3, 6, CURRENT_TIMESTAMP, 1);
