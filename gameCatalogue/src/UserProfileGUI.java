@@ -79,14 +79,15 @@ public class UserProfileGUI extends JFrame{
 		
 		try{
 			Statement s = con.createStatement();
-			String query = "SELECT g.gameName, g.gameGenre, o.rating, o.since FROM owns o, game g WHERE o.userId = '" + userId + "' AND o.gameId = g.gameId";
+			String query = "SELECT g.gameName, g.gameGenre, g.gameId, o.rating, o.since FROM owns o, game g WHERE o.userId = '" + userId + "' AND o.gameId = g.gameId";
 			ResultSet rs = s.executeQuery(query);
 			while (rs.next()) {    
 				 String gameName = rs.getString(1); 
 				 String gameGenre = rs.getString(2);
-				 Integer rating = rs.getInt(3);
-				 String since = rs.getString(4);
-				 owns.add(new StoreData(gameName, gameGenre, rating, since, new JButton("Game: "+gameName+" : "+gameGenre),
+				 Integer gameId = rs.getInt(3);
+				 Integer rating = rs.getInt(4);
+				 String since = rs.getString(5);
+				 owns.add(new StoreData(gameId, gameName, gameGenre, rating, since, new JButton("Game: "+gameName+" : "+gameGenre),
 						                new JTextArea("Rated: "+rating.toString()+" On "+since)));
 				 
 				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
@@ -105,21 +106,23 @@ public class UserProfileGUI extends JFrame{
 					panel.remove(sd.getButton());
 					panel.remove(sd.getText());
 				}
-				panel.add(wish.get(0).getButton());
-				panel.add(wish.get(0).getText());
-				layout.putConstraint(SpringLayout.NORTH, wish.get(0).getText(), 1, SpringLayout.SOUTH, wish.get(0).getButton());
-				
-				layout.putConstraint(SpringLayout.NORTH, wish.get(0).getButton(), 4, SpringLayout.SOUTH, wishList);
-				
-				for (int i=1; i< wish.size(); i++) {
-					panel.add(wish.get(i).getButton());
-					panel.add(wish.get(i).getText());
-					layout.putConstraint(SpringLayout.NORTH, wish.get(i).getText(), 1, SpringLayout.SOUTH, wish.get(i).getButton());
-					
-					layout.putConstraint(SpringLayout.NORTH, wish.get(i).getButton(), 4, SpringLayout.SOUTH, wish.get(i-1).getText());
-				}
-				frame.revalidate();
-				frame.repaint();
+                if (!wish.isEmpty()) {
+                    panel.add(wish.get(0).getButton());
+                    panel.add(wish.get(0).getText());
+                    layout.putConstraint(SpringLayout.NORTH, wish.get(0).getText(), 1, SpringLayout.SOUTH, wish.get(0).getButton());
+                    
+                    layout.putConstraint(SpringLayout.NORTH, wish.get(0).getButton(), 4, SpringLayout.SOUTH, wishList);
+                    
+                    for (int i=1; i< wish.size(); i++) {
+                        panel.add(wish.get(i).getButton());
+                        panel.add(wish.get(i).getText());
+                        layout.putConstraint(SpringLayout.NORTH, wish.get(i).getText(), 1, SpringLayout.SOUTH, wish.get(i).getButton());
+                        
+                        layout.putConstraint(SpringLayout.NORTH, wish.get(i).getButton(), 4, SpringLayout.SOUTH, wish.get(i-1).getText());
+                    }
+                    frame.revalidate();
+                    frame.repaint();
+                }
 			}
 		});
         
@@ -131,23 +134,47 @@ public class UserProfileGUI extends JFrame{
 					panel.remove(sd.getButton());
 					panel.remove(sd.getText());
 				}
-				panel.add(owns.get(0).getButton());
-				panel.add(owns.get(0).getText());
-				layout.putConstraint(SpringLayout.NORTH, owns.get(0).getText(), 1, SpringLayout.SOUTH, owns.get(0).getButton());
-				
-				layout.putConstraint(SpringLayout.NORTH, owns.get(0).getButton(), 4, SpringLayout.SOUTH, wishList);
-				
-				for (int i=1; i< owns.size(); i++) {
-					panel.add(owns.get(i).getButton());
-					panel.add(owns.get(i).getText());
-					layout.putConstraint(SpringLayout.NORTH, owns.get(i).getText(), 1, SpringLayout.SOUTH, owns.get(i).getButton());
-					
-					layout.putConstraint(SpringLayout.NORTH, owns.get(i).getButton(), 4, SpringLayout.SOUTH, owns.get(i-1).getText());
-				}
-				frame.revalidate();
-				frame.repaint();
+                if (!owns.isEmpty()) {
+                    panel.add(owns.get(0).getButton());
+                    panel.add(owns.get(0).getText());
+                    layout.putConstraint(SpringLayout.NORTH, owns.get(0).getText(), 1, SpringLayout.SOUTH, owns.get(0).getButton());
+                    
+                    layout.putConstraint(SpringLayout.NORTH, owns.get(0).getButton(), 4, SpringLayout.SOUTH, wishList);
+                    
+                    for (int i=1; i< owns.size(); i++) {
+                        panel.add(owns.get(i).getButton());
+                        panel.add(owns.get(i).getText());
+                        layout.putConstraint(SpringLayout.NORTH, owns.get(i).getText(), 1, SpringLayout.SOUTH, owns.get(i).getButton());
+                        
+                        layout.putConstraint(SpringLayout.NORTH, owns.get(i).getButton(), 4, SpringLayout.SOUTH, owns.get(i-1).getText());
+                    }
+                    frame.revalidate();
+                    frame.repaint();
+                }
 			}
 		});
+        
+        for (StoreData sd : wish) {
+            sd.getButton().addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				GameInfoGUI game = new GameInfoGUI(sd.getGameId(), loggedInUserId, con);
+                game.setPanel(frame);
+			}
+		});
+        }
+        
+        for (StoreData sd : owns) {
+            sd.getButton().addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				GameInfoGUI game = new GameInfoGUI(sd.getGameId(), loggedInUserId, con);
+                game.setPanel(frame);
+			}
+		});
+        }
 		
 		if (!userId.equals(loggedInUserId)) {
 
