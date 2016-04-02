@@ -46,12 +46,14 @@ public class GameInfoGUI extends JFrame{
 	//Check if the user owns this game
 	private boolean checkIfOwned(){
 		//TODO
+		return false;
 	}
 
 	//Check if the game is in the user's wishlist, return the rank if so
 	//Return -1 if not in wishlist
 	private Integer checkInWishlist(){
 		//TODO
+		return -1;
 	}
 	
 	public JPanel getPanel(){

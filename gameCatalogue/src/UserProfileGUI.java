@@ -56,12 +56,13 @@ public class UserProfileGUI extends JFrame{
 	}
 
 	
-	public JPanel getPanel(Integer loggedIn){
+	public void setPanel(Integer loggedIn, JFrame frame){
 		loggedInUserId = loggedIn;
 		ArrayList<StoreData> owns = new ArrayList<StoreData>();
 		ArrayList<StoreData> wish = new ArrayList<StoreData>();
 		
 		panel = new JPanel();
+		this.frame = frame;
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
 				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
 		JButton wishList = new JButton("User Wish List");
@@ -92,6 +93,7 @@ public class UserProfileGUI extends JFrame{
 						                new JTextArea("Rated: "+rating.toString()+" On "+since)));
 				 
 				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
+				 //panel.add(owns.get(0).getButton());
 			} 
 		}
 		catch (SQLException e1){
@@ -102,6 +104,13 @@ public class UserProfileGUI extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				for (StoreData sd : wish) {
+					System.out.println("Wish: "+sd.getGameName()+" : "+sd.getButton());
+				}
+				for (StoreData sd : owns) {
+					System.out.println("Own: "+sd.getGameName()+" : "+sd.getButton()+" : "+sd.getText());
+				}
+				
 				for (StoreData sd : wish) {
 					panel.remove(sd.getButton());
 					panel.remove(sd.getText());
@@ -119,6 +128,8 @@ public class UserProfileGUI extends JFrame{
 					
 					layout.putConstraint(SpringLayout.NORTH, owns.get(i).getButton(), 4, SpringLayout.SOUTH, owns.get(i-1).getText());
 				}
+				frame.revalidate();
+				frame.repaint();
 			}
 		});
 		
@@ -183,7 +194,10 @@ public class UserProfileGUI extends JFrame{
 											
 			});
 		}
-		return panel;
+		
+		frame.setContentPane(panel);
+		frame.revalidate();
+		frame.repaint();
 	}
 	
 

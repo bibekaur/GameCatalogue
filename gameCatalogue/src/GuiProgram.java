@@ -39,12 +39,10 @@ public class GuiProgram extends JFrame{
 		frame.remove(panel);
 		
 		userGUI = new UserProfileGUI(con, 3);
-		panel = userGUI.getPanel(loggedInUserId);
+		userGUI.setPanel(loggedInUserId, frame);
 		//panel.add(searchField);
 		//panel.add(searchButton);
-		frame.setContentPane(panel);
-		frame.revalidate();
-		frame.repaint();;
+
 	}
 	
 	//Splitting it into initializing what the buttons do
