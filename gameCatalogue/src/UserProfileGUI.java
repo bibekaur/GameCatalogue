@@ -120,9 +120,9 @@ public class UserProfileGUI extends JFrame{
                         
                         layout.putConstraint(SpringLayout.NORTH, wish.get(i).getButton(), 4, SpringLayout.SOUTH, wish.get(i-1).getText());
                     }
-                    frame.revalidate();
-                    frame.repaint();
                 }
+                frame.revalidate();
+                frame.repaint();
 			}
 		});
         
@@ -148,9 +148,9 @@ public class UserProfileGUI extends JFrame{
                         
                         layout.putConstraint(SpringLayout.NORTH, owns.get(i).getButton(), 4, SpringLayout.SOUTH, owns.get(i-1).getText());
                     }
-                    frame.revalidate();
-                    frame.repaint();
                 }
+                frame.revalidate();
+                frame.repaint();
 			}
 		});
         
