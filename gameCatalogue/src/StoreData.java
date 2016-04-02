@@ -2,6 +2,7 @@ import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 public class StoreData {
+	private Integer gameId;
 	private String gameName;
 	private String gameGenre;
 	private Integer rating;

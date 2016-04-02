@@ -40,8 +40,8 @@ public class GuiProgram extends JFrame{
 		frame.remove(panel);
 		//gameGUI = new GameInfoGUI(1, 3, con);
 		//gameGUI.setPanel(frame);
-		//userGUI = new UserProfileGUI(con, 3);
-		//userGUI.setPanel(loggedInUserId, frame);
+		userGUI = new UserProfileGUI(con, 3);
+		userGUI.setPanel(loggedInUserId, frame);
 		//panel.add(searchField);
 		//panel.add(searchButton);
 
