@@ -179,6 +179,18 @@ values (DEFAULT, 'Bastion', 'Action role-playing');
 insert into game
 values (DEFAULT, 'Recettear: An Item Shop''s Tale', 'Action role-playing, business simulation');
 
+insert into game
+values (DEFAULT, 'Fire Emblem: Conquest', 'Strategy role-playing');
+
+insert into game
+values (DEFAULT, 'Fire Emblem: Birthright', 'Strategy role-playing');
+
+insert into game
+values (DEFAULT, 'Pokemon Omega Ruby', 'Role-playing game');
+
+insert into game
+values (DEFAULT, 'Pokemon Aqua Sapphire', 'Role-playing game');
+
 insert into platform
 values (DEFAULT, 'PC', null, null);
 
@@ -187,6 +199,9 @@ values (DEFAULT, 'Xbox 360', 249.99, '2005-11-22');
 
 insert into platform
 values (DEFAULT, 'PlayStation 4', 429.99, '2013-11-15');
+
+insert into platform 
+values (DEFAULT, 'Nintendo 3DS', 199.99, '2011-03-27');
 
 insert into developer
 values (DEFAULT, 'Thekla, Inc.', null);
@@ -206,6 +221,99 @@ values (DEFAULT, 'FromSoftware', '2009-09-01');
 insert into developer
 values (DEFAULT, 'tobyfox', null);
 
+insert into developer
+values (DEFAULT, 'Intelligent Systems', '1986-12-01');
+
+insert into developer
+values (DEFAULT, 'Game Freak', '1989-04-26');
+
+insert into developed
+values (1, 1);
+
+insert into developed
+values (2, 6);
+
+insert into developed
+values (3, 3);
+
+insert into developed
+values (4, 5);
+
+insert into developed
+values (5, 4);
+
+insert into developed
+values (6, 2);
+
+insert into developed 
+values (7, 7);
+
+insert into developed
+values (8, 7);
+
+insert into developed
+values (9, 8);
+
+insert into developed
+values (10, 8);
+
+insert into available
+values (1, 1, 43.99, '2016-01-26');
+
+insert into available
+values (1, 3, 43.99, '2016-01-26');
+
+insert into available
+values (2, 1, 10.99, '2015-09-15');
+
+insert into available
+values (3, 2, 59.99, '2015-10-27');
+
+insert into available
+values (4, 3, 69.99, '2015-03-24');
+
+insert into available
+values (5, 1, 14.99, '2011-07-16');
+
+insert into available
+values (6, 1, 21.99, '2010-09-10');
+
+insert into available
+values (7, 4, 39.99, '2016-02-19');
+
+insert into available
+values (8, 4, 39.99, '2016-02-19');
+
+insert into available
+values (9, 4, 39.99, '2014-11-21');
+
+insert into available
+values (10, 4, 39.99, '2014-11-21');
+
+insert into wishes
+values (1, 5, 1);
+
+insert into wishes
+values (1, 1, 2);
+
+insert into wishes
+values (1, 2, 4);
+
+insert into wishes
+values (1, 3, 3);
+
+insert into owns
+values (1, 7, CURRENT_TIMESTAMP, 10);
+
+insert into owns
+values (1, 9, CURRENT_TIMESTAMP, 8);
+
+insert into owns
+values (2, 7, CURRENT_TIMESTAMP, 10);
+
+insert into owns
+values (2, 10, CURRENT_TIMESTAMP, 9);
+
 insert into owns
 values (3, 1, CURRENT_TIMESTAMP, 5);
 
@@ -217,3 +325,9 @@ values (3, 4, CURRENT_TIMESTAMP, 9);
 
 insert into owns
 values (3, 6, CURRENT_TIMESTAMP, 1);
+
+insert into owns
+values (3, 7, CURRENT_TIMESTAMP, 10);
+
+insert into review
+values (DEFAULT, 'Fire Emblem: Conquest was a really great game! The strategy involved was excellent. Chapter 10 was brutal, but it was really satisfying to play!', 10, 1, 7);
