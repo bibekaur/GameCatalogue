@@ -549,7 +549,8 @@ public class GameInfoGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO: go to the platform GUI
+				PlatformInfoGUI platformGUI= new PlatformInfoGUI (platformId, loggedInUserId, con);
+				platformGUI.setPanel(frame);
 			}
 		});
 	}
