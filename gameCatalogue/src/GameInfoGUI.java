@@ -162,7 +162,7 @@ public class GameInfoGUI extends JFrame{
 	}
 
 	
-	private void addRateButtonListener(JButton rateButton, JTextField rateText){
+	private void addRateButtonListener(JButton rateButton, final JTextField rateText){
 		rateButton.addActionListener(new ActionListener(){
 
 			@Override

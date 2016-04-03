@@ -7,9 +7,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 
+@SuppressWarnings("serial")
 public class UserProfileGUI extends JFrame{
 	private Connection con;
-	private JFrame frame;
 	private JPanel panel;
 	
 	private String username;
@@ -50,16 +50,15 @@ public class UserProfileGUI extends JFrame{
 	}
 
 	
-	public void setPanel(Integer loggedIn, JFrame frame){
+	public void setPanel(Integer loggedIn, final JFrame frame){
 		loggedInUserId = loggedIn;
-		ArrayList<StoreData> owns = new ArrayList<StoreData>();
-		ArrayList<StoreData> wish = new ArrayList<StoreData>();
+		final ArrayList<StoreData> owns = new ArrayList<StoreData>();
+		final ArrayList<StoreData> wish = new ArrayList<StoreData>();
 		
 		panel = new JPanel();
-		this.frame = frame;
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
 				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
-		JButton wishList = new JButton("User Wish List");
+		final JButton wishList = new JButton("User Wish List");
 		JButton owned = new JButton("User Owned Games");
 		panel.add(userInfo);
 		
@@ -67,7 +66,7 @@ public class UserProfileGUI extends JFrame{
 		panel.add(owned);
 		
 
-		SpringLayout layout = new SpringLayout();
+		final SpringLayout layout = new SpringLayout();
 		layout.putConstraint(SpringLayout.NORTH, wishList, 2, SpringLayout.SOUTH, userInfo);
 		layout.putConstraint(SpringLayout.WEST, owned, 50, SpringLayout.EAST, wishList);
 		layout.putConstraint(SpringLayout.NORTH, owned, 2, SpringLayout.SOUTH, userInfo);
@@ -151,7 +150,7 @@ public class UserProfileGUI extends JFrame{
 			}
 		});
         
-        for (StoreData sd : wish) {
+        for (final StoreData sd : wish) {
             sd.getButton().addActionListener(new ActionListener(){
 
 			@Override
@@ -162,7 +161,7 @@ public class UserProfileGUI extends JFrame{
 		});
         }
         
-        for (StoreData sd : owns) {
+        for (final StoreData sd : owns) {
             sd.getButton().addActionListener(new ActionListener(){
 
 			@Override
@@ -175,7 +174,7 @@ public class UserProfileGUI extends JFrame{
 		
 		if (!userId.equals(loggedInUserId)) {
 
-			JTextField rateText = new JTextField(2);
+			final JTextField rateText = new JTextField(2);
 			JButton rate = new JButton("Rate");
 			panel.add(rateText);
 			panel.add(rate);
