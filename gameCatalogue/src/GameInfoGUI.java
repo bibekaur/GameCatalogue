@@ -555,7 +555,7 @@ public class GameInfoGUI extends JFrame{
 		});
 	}
 	
-	public void setPanel(JFrame frame){
+	public void setPanel(final JFrame frame){
 		this.frame = frame;
 		panel = new JPanel();
 		JTextArea gameInfo = new JTextArea("Name: " + gameName + "\n"
