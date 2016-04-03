@@ -229,6 +229,13 @@ insert into developed
 values (1, 1);
 
 insert into developed
+
+values (1, 2);
+
+insert into developed
+values (1, 3);
+
+insert into developed
 values (2, 6);
 
 insert into developed
@@ -287,3 +294,54 @@ values (9, 4, 39.99, '2014-11-21');
 
 insert into available
 values (10, 4, 39.99, '2014-11-21');
+
+insert into wishes
+values (1, 5, 1);
+
+insert into wishes
+values (1, 1, 2);
+
+insert into wishes
+values (1, 2, 4);
+
+insert into wishes
+values (1, 3, 3);
+
+insert into owns
+values (1, 7, CURRENT_TIMESTAMP, 10);
+
+insert into owns
+values (1, 9, CURRENT_TIMESTAMP, 8);
+
+insert into owns
+values (2, 7, CURRENT_TIMESTAMP, 10);
+
+insert into owns
+values (2, 10, CURRENT_TIMESTAMP, 9);
+
+insert into owns
+values (3, 1, CURRENT_TIMESTAMP, 5);
+
+insert into owns
+values (3, 2, CURRENT_TIMESTAMP, 6);
+
+insert into owns
+values (3, 4, CURRENT_TIMESTAMP, 9);
+
+insert into owns
+values (3, 6, CURRENT_TIMESTAMP, 1);
+
+insert into owns
+values (3, 7, CURRENT_TIMESTAMP, 10);
+
+insert into review
+values (DEFAULT, 'Fire Emblem: Conquest was a really great game! The strategy involved was excellent. Chapter 10 was brutal, but it was really satisfying to play!', 10, 1, 7);
+
+insert into review
+values (DEFAULT, 'it was alright', 8, 3, 1);
+
+insert into review
+values (DEFAULT, 'it was alright', 8, 3, 4);
+
+insert into review
+values (DEFAULT, 'it was alright', 9, 3, 7);
