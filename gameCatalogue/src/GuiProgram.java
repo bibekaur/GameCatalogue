@@ -89,7 +89,9 @@ public class GuiProgram extends JFrame{
 						} 
 						else {
 							loggedInUserId = rs.getInt(1);
-							drawLoggedInScreen();	
+							//drawLoggedInScreen();
+							MainMenu m = new MainMenu(con, loggedInUserId);
+							m.drawMenu(frame);
 						}
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block

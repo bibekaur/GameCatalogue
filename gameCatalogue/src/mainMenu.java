@@ -7,48 +7,88 @@ import java.util.ArrayList;
 
 public class MainMenu extends JFrame{
     private Connection con;
+    private JFrame frame;
 
     private Integer loggedInUserId;
-    private JFrame frame;
-    private JPanel loginPanel;
     private JPanel mainPanel;
+
+    /* Toolbar */
     private JPanel toolbarPanel;
     private JButton userProfileButton;
+    private JButton logoutButton;
 
+    /* Search bar */
+    private JPanel searchPanel;
     private JButton searchButton;
     private JTextField searchField;
     private String[] options = {"Game", "Platform", "Developer"};
     private JComboBox<String> searchOptions;
 
     /* Top 10 games */
-    private JPanel topGamePanel;
+    private JPanel topGamesPanel;
     private ArrayList<JButton> topGamesButtons;
     private ArrayList<JLabel> topGamesLabels;
 
     /* Top Games Played by All Users */
-    private JPanel allGamePanel;
+    private JPanel allGamesPanel;
     private ArrayList<JButton> allGamesButtons;
     private ArrayList<JLabel> allGamesLabels;
 
     /* Top 5 Users */
-    private JPanel topUserPanel;
+    private JPanel topUsersPanel;
     private ArrayList<JButton> topUsersButtons;
     private ArrayList<JLabel> topUsersLabels;
 
-    public MainMenu(Integer userId) {
-        setTitle("Game Catalogue");
-        setSize(500,400);
+    public MainMenu(Connection sqlConnection, Integer userId) {
+        con = sqlConnection;
         loggedInUserId = userId;
+
+        // TODO: Layouts
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+        initToolbar();
+        initSearch();
+        initTopUsers();
+        initGamesByAll();
+        initTopGames();
     }
 
-    public void init() {
+    public void initToolbar() {
+        toolbarPanel = new JPanel();
+        toolbarPanel.setLayout(new FlowLayout());
+        userProfileButton = new JButton("My Profile");
+        logoutButton = new JButton("Logout");
+
+        toolbarPanel.add(userProfileButton);
+        toolbarPanel.add(logoutButton);
 
         userProfileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("WOO\n");
+                //go to user profile
             }
         });
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //go to login screen again, set logged out
+            }
+        });
+    }
+
+    public void initSearch() {
+
+        searchPanel = new JPanel();
+        searchPanel.setLayout(new FlowLayout());
+        searchOptions = new JComboBox<String>(options);
+        searchButton = new JButton("Search");
+        searchField = new JTextField(30);
+
+        searchPanel.add(searchOptions);
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
 
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -91,6 +131,7 @@ public class MainMenu extends JFrame{
     }
 
     public void initTopUsers() {
+        topUsersPanel = new JPanel();
         topUsersButtons = new ArrayList<JButton>();
         topUsersLabels = new ArrayList<JLabel>();
 
@@ -110,24 +151,25 @@ public class MainMenu extends JFrame{
                 Integer rating = rs.getInt(3);
                 JLabel userInfo = new JLabel(username + " " + rating.toString());
                 topUsersLabels.add(userInfo);
-                topUsersButtons.add(createButton(userId));
+                topUsersButtons.add(createButtonToUsers(userId));
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        topUserPanel.removeAll();
+        topUsersPanel.removeAll();
         final JLabel topUsersLabel = new JLabel("Top 5 Users!");
-        topUserPanel.add(topUsersLabel);
+        topUsersPanel.add(topUsersLabel);
         for(int i = 0; i < topUsersButtons.size(); i++) {
-            topUserPanel.add(topUsersLabels.get(i));
-            topUserPanel.add(topUsersButtons.get(i));
+            topUsersPanel.add(topUsersLabels.get(i));
+            topUsersPanel.add(topUsersButtons.get(i));
             //TODO: Add Layout-ing
         }
     }
 
     public void initTopGames() {
+        topGamesPanel = new JPanel();
         topGamesButtons = new ArrayList<JButton>();
         topGamesLabels = new ArrayList<JLabel>();
 
@@ -148,33 +190,25 @@ public class MainMenu extends JFrame{
                 Integer rating = rs.getInt(4);
                 JLabel gameInfo = new JLabel(gameName + " " + gameGenre + " " + rating.toString());
                 topGamesLabels.add(gameInfo);
-                topGamesButtons.add(createButton(gameId));
+                topGamesButtons.add(createButtonToGames(gameId));
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        topGamePanel.removeAll();
+        topGamesPanel.removeAll();
         final JLabel topGamesLabel = new JLabel("Top 10 Games!");
-        SpringLayout layout = new SpringLayout();
-        topGamePanel.add(topGamesLabel);
+        topGamesPanel.add(topGamesLabel);
         for(int i = 0; i < topGamesButtons.size(); i++) {
-            topGamePanel.add(topGamesLabels.get(i));
-            topGamePanel.add(topGamesButtons.get(i));
-            if(i == 0) {
-                layout.putConstraint(SpringLayout.NORTH, topGamesLabels.get(i), 50, SpringLayout.SOUTH, topGamesLabel);
-                layout.putConstraint(SpringLayout.NORTH, topGamesButtons.get(i), 40, SpringLayout.SOUTH, topGamesLabel);
-            } else {
-                layout.putConstraint(SpringLayout.NORTH, topGamesLabels.get(i), 40, SpringLayout.SOUTH, topGamesLabels.get(i-1));
-                layout.putConstraint(SpringLayout.NORTH, topGamesButtons.get(i), 40, SpringLayout.SOUTH, topGamesButtons.get(i-1));
-            }
-            layout.putConstraint(SpringLayout.WEST, topGamesButtons.get(i), 2, SpringLayout.EAST, topGamesLabels.get(i));
+            topGamesPanel.add(topGamesLabels.get(i));
+            topGamesPanel.add(topGamesButtons.get(i));
+            // TODO: Layout
         }
-        //topGamePanel.setLayout(layout);
     }
 
     public void initGamesByAll() {
+        allGamesPanel = new JPanel();
         allGamesButtons = new ArrayList<JButton>();
         allGamesLabels = new ArrayList<JLabel>();
 
@@ -193,33 +227,23 @@ public class MainMenu extends JFrame{
                 String gameGenre = rs.getString(3);
                 JLabel gameInfo = new JLabel(gameName + " " + gameGenre);
                 allGamesLabels.add(gameInfo);
-                allGamesButtons.add(createButton(gameId));
+                allGamesButtons.add(createButtonToGames(gameId));
                 System.out.println(gameName + " " + gameGenre);
             }
         } catch(SQLException e1) {
             e1.printStackTrace();
         }
 
-        allGamePanel.removeAll();
+        allGamesPanel.removeAll();
         final JLabel allGamesLabel = new JLabel("Top 5 Games Played By Top 5 Users!");
-        SpringLayout layout = new SpringLayout();
-        allGamePanel.add(allGamesLabel);
+        allGamesPanel.add(allGamesLabel);
         for(int i = 0; i < allGamesButtons.size(); i++) {
-            allGamePanel.add(allGamesLabels.get(i));
-            allGamePanel.add(allGamesButtons.get(i));
-            if(i == 0) {
-                layout.putConstraint(SpringLayout.NORTH, allGamesLabels.get(i), 50, SpringLayout.SOUTH, allGamesLabel);
-                layout.putConstraint(SpringLayout.NORTH, allGamesButtons.get(i), 40, SpringLayout.SOUTH, allGamesLabel);
-            } else {
-                layout.putConstraint(SpringLayout.NORTH, allGamesLabels.get(i), 40, SpringLayout.SOUTH, allGamesLabels.get(i-1));
-                layout.putConstraint(SpringLayout.NORTH, allGamesButtons.get(i), 40, SpringLayout.SOUTH, allGamesButtons.get(i-1));
-            }
-            layout.putConstraint(SpringLayout.WEST, allGamesButtons.get(i), 2, SpringLayout.EAST, allGamesLabels.get(i));
+            allGamesPanel.add(allGamesLabels.get(i));
+            allGamesPanel.add(allGamesButtons.get(i));
         }
-        //allGamePanel.setLayout(layout);
     }
 
-    public JButton createButton(Integer gameId) {
+    private JButton createButtonToGames(Integer gameId) {
         JButton button = new JButton("Details");
         button.addActionListener(new ActionListener() {
             @Override
@@ -230,61 +254,27 @@ public class MainMenu extends JFrame{
         return button;
     }
 
-    public void run() {
-
-        try{
-            DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            //Change the below line to match your oracle username/password
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_b8k8", "a33858127");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        frame = this;
-
-        /* Main Menu */
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        toolbarPanel = new JPanel();
-        toolbarPanel.setLayout(new FlowLayout());
-        userProfileButton = new JButton("My Profile");
-        searchOptions = new JComboBox<String>(options);
-        searchButton = new JButton("Search");
-        searchField = new JTextField(30);
-
-        topGamePanel = new JPanel();
-        allGamePanel = new JPanel();
-        topUserPanel = new JPanel();
-
-        init();
-        initTopGames();
-        initGamesByAll();
-        initTopUsers();
-        drawMenu();
-
+    private JButton createButtonToUsers(Integer userId) {
+        JButton button = new JButton("Details");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("This is the userId: " + userId.toString());
+            }
+        });
+        return button;
     }
 
-    public void drawMenu() {
-        mainPanel.removeAll();
-        toolbarPanel.removeAll();
-        toolbarPanel.add(userProfileButton);
-        toolbarPanel.add(searchOptions);
-        toolbarPanel.add(searchField);
-        toolbarPanel.add(searchButton);
-
+    public void drawMenu(JFrame frame) {
+        this.frame = frame;
         mainPanel.add(toolbarPanel);
-        mainPanel.add(topGamePanel);
-        mainPanel.add(allGamePanel);
-        mainPanel.add(topUserPanel);
-        frame.setContentPane(mainPanel);
-        frame.setResizable(true);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+        mainPanel.add(searchPanel);
+        mainPanel.add(topGamesPanel);
+        mainPanel.add(allGamesPanel);
+        mainPanel.add(topUsersPanel);
 
-    public static void main(String[] args) {
-        MainMenu m = new MainMenu(1);
-        m.run();
+        frame.setContentPane(mainPanel);
+        frame.revalidate();
+        frame.repaint();
     }
 }
