@@ -643,7 +643,8 @@ public class GameInfoGUI extends JFrame{
 		mainPage.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {				
-				//TODO call main page function
+				mainMenu m = new mainMenu(con, loggedInUserId);
+				m.drawMenu(frame);
 			}
 		});
 		

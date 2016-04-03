@@ -146,7 +146,7 @@ public class PlatformInfoGUI extends JFrame{
 //		ownButton.addActionListener(new);
 //	}
 	
-	public void setPanel(JFrame frame){
+	public void setPanel(final JFrame frame){
 		panel = new JPanel();
 		JTextArea consoleInfo = new JTextArea("Platform: " + platformName + "\nPrice: "+ platformPrice);
 		JTextArea consoleGameInfo = new JTextArea(platformGameInfo);
@@ -160,7 +160,8 @@ public class PlatformInfoGUI extends JFrame{
 		mainPage.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {				
-				//TODO call main page function
+				mainMenu m = new mainMenu(con, loggedInUserId);
+				m.drawMenu(frame);
 			}
 		});
 		
