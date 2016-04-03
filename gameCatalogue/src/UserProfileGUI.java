@@ -7,9 +7,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 
+@SuppressWarnings("serial")
 public class UserProfileGUI extends JFrame{
 	private Connection con;
-	private JFrame frame;
 	private JPanel panel;
 	
 	private String username;
@@ -50,16 +50,15 @@ public class UserProfileGUI extends JFrame{
 	}
 
 	
-	public void setPanel(Integer loggedIn, JFrame frame){
+	public void setPanel(Integer loggedIn, final JFrame frame){
 		loggedInUserId = loggedIn;
-		ArrayList<StoreData> owns = new ArrayList<StoreData>();
-		ArrayList<StoreData> wish = new ArrayList<StoreData>();
+		final ArrayList<StoreData> owns = new ArrayList<StoreData>();
+		final ArrayList<StoreData> wish = new ArrayList<StoreData>();
 		
 		panel = new JPanel();
-		this.frame = frame;
 		JTextArea userInfo = new JTextArea("Username: " + username +"\nRating: " +userRating.toString()+
 				                           "\nJoined Since: "+joinDate.substring(0, joinDate.indexOf('.')));
-		JButton wishList = new JButton("User Wish List");
+		final JButton wishList = new JButton("User Wish List");
 		JButton owned = new JButton("User Owned Games");
 		panel.add(userInfo);
 		
@@ -67,7 +66,7 @@ public class UserProfileGUI extends JFrame{
 		panel.add(owned);
 		
 
-		SpringLayout layout = new SpringLayout();
+		final SpringLayout layout = new SpringLayout();
 		layout.putConstraint(SpringLayout.NORTH, wishList, 2, SpringLayout.SOUTH, userInfo);
 		layout.putConstraint(SpringLayout.WEST, owned, 50, SpringLayout.EAST, wishList);
 		layout.putConstraint(SpringLayout.NORTH, owned, 2, SpringLayout.SOUTH, userInfo);
@@ -151,7 +150,7 @@ public class UserProfileGUI extends JFrame{
 			}
 		});
         
-        for (StoreData sd : wish) {
+        for (final StoreData sd : wish) {
             sd.getButton().addActionListener(new ActionListener(){
 
 			@Override
@@ -162,7 +161,7 @@ public class UserProfileGUI extends JFrame{
 		});
         }
         
-        for (StoreData sd : owns) {
+        for (final StoreData sd : owns) {
             sd.getButton().addActionListener(new ActionListener(){
 
 			@Override
@@ -175,7 +174,7 @@ public class UserProfileGUI extends JFrame{
 		
 		if (!userId.equals(loggedInUserId)) {
 
-			JTextField rateText = new JTextField(2);
+			final JTextField rateText = new JTextField(2);
 			JButton rate = new JButton("Rate");
 			panel.add(rateText);
 			panel.add(rate);
@@ -189,46 +188,51 @@ public class UserProfileGUI extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					//Get the user rating input
-					Integer rating = -1;
+					Integer rating;
 					try {
 						rating = Integer.parseInt(rateText.getText());
-						if (rating > 10 || rating < 1){
-							rating = -1;
-							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
-						}
 											
 					} catch(NumberFormatException e){
-						rating = -1;
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+						return;
 					}
 
-					if (rating != -1){
-						try{
-							Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					                 ResultSet.CONCUR_UPDATABLE);
-							//TODO: apparnetly need to use check statement, also display what the rating is using a label
-							//Check if we've already rated this user
-							String query = "SELECT rating from rate WHERE rater_userId = " + loggedInUserId + "AND rated_userId = " + userId;
-							ResultSet rs = s.executeQuery(query);
+					try{
+						Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					                ResultSet.CONCUR_UPDATABLE);
+						//TODO: apparnetly need to use check statement, also display what the rating is using a label
+						//Check if we've already rated this user
+						String query = "SELECT rating from rate WHERE rater_userId = " + loggedInUserId + "AND rated_userId = " + userId;
+						ResultSet rs = s.executeQuery(query);
 							
-							if (rs.next()){ //We've already rated them, update the entry
-								Integer oldRating = rs.getInt(1);
+						if (rs.next()){ //We've already rated them, update the entry
+							Integer oldRating = rs.getInt(1);
+							try{
 								rs.updateInt(1, rating);
 								rs.updateRow();
 								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), 
-										"You updated " + username + "'s rating from " + oldRating + " to "  + rating);
+											"You updated " + username + "'s rating from " + oldRating + " to "  + rating);
+							} catch (SQLException e1){
+								JOptionPane.showMessageDialog(frame, "You didn't enter a rating between 1 and 10. Please enter an integer between 1 and 10");
+								return;
+							}
 	
-							}
-							else {
-								query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + userRating + ")";
+						}
+						else {
+							try {
+								query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + rating + ")";
 								s.executeUpdate(query);
-								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You gave " + username+ " a " + userRating + " rating!");
+								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You gave " + username+ " a " + rating + " rating!");
+							} catch (SQLException e1){
+								JOptionPane.showMessageDialog(frame, "You didn't enter a rating between 1 and 10. Please enter an integer between 1 and 10");
+								return;
 							}
+						}
+						
 							
-						}
-						catch (SQLException e1){
-							e1.printStackTrace();
-						}
+					}
+					catch (SQLException e1){
+						e1.printStackTrace();
 					}
 				}
 											
