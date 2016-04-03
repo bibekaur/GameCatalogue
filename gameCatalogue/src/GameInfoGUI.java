@@ -499,7 +499,6 @@ public class GameInfoGUI extends JFrame{
 					}
 					
 					query = "INSERT into review VALUES (DEFAULT,'" + description + "'," + rating + "," + loggedInUserId + "," + gameId + ")";
-					System.out.println(query);
 					s.executeQuery(query);
 					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Your review has been saved");
 	
@@ -510,6 +509,32 @@ public class GameInfoGUI extends JFrame{
 		});
 	}
 	
+	private void addDeleteReviewButtonListener(JButton deleteButton){
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//Check if we have a review then delete it
+				try {
+					Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+			                 ResultSet.CONCUR_UPDATABLE);
+					String query = "SELECT rId from review WHERE userId="+ loggedInUserId + " AND gameId=" + gameId;
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						rs.deleteRow();
+						JOptionPane.showMessageDialog(frame, "Your review has been deleted");
+						return;
+					}
+					
+					JOptionPane.showMessageDialog(frame, "You have not written a review yet");
+					
+				} catch (SQLException e1){
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
 	
 	public void setPanel(JFrame frame){
 		this.frame = frame;
@@ -555,6 +580,8 @@ public class GameInfoGUI extends JFrame{
 		addReviewButtonListener(reviewGameButton);
 		
 		//"Delete my review" button
+		JButton deleteReviewButton = new JButton("Delete my review");
+		addDeleteReviewButtonListener(deleteReviewButton);
 		
 		//TODO: platform button
 		
@@ -589,6 +616,7 @@ public class GameInfoGUI extends JFrame{
 				
 		});
 		
+		panel.add(deleteReviewButton);
 		panel.add(reviewGameButton);
 		panel.add(topFiveButton);
 		panel.add(lowestFiveButton);
