@@ -11,8 +11,19 @@ public class GuiProgram extends JFrame{
 	private Connection con;
 	
 	private JFrame frame;
+
 	private JPanel mainPanel;
 	private JPanel resultsPanel;
+	
+	private UserProfileGUI userGUI;
+	private GameInfoGUI gameGUI;
+	private PlatformInfoGUI platformGUI;
+	private JPanel UserPanel;
+	private JPanel GamePanel;
+	private String loginName;
+    private String loginPassword;
+    private Integer loggedInUserId;
+    
 	private JTextField loginNameBox;
 	private JTextField loginPasswordBox;
 	private JButton loginButton;
@@ -34,13 +45,26 @@ public class GuiProgram extends JFrame{
 	
 	public void drawLoggedInScreen(){
 		frame.remove(mainPanel);
+		
+		/* Comment out lines below when you want to test a specific GUI */
+	
+		//gameGUI = new GameInfoGUI(1, 2, con);
+		//gameGUI.setPanel(frame);
+		//DeveloperInfoGUI devGUI = new DeveloperInfoGUI(con, 5);
+		//devGUI.setPanel(loggedInUserId, frame);
+		//platformGUI = new PlatformInfoGUI(1, loggedInUserId, con);
+		//platformGUI.setPanel(frame);
+		//userGUI = new UserProfileGUI(con, 3);
+		//userGUI.setPanel(loggedInUserId, frame);
+		
+
 		mainPanel = new JPanel();
 		mainPanel.add(searchField);
 		mainPanel.add(searchOptions);
 		mainPanel.add(searchGameName);
 		frame.setContentPane(mainPanel);
 		frame.revalidate();
-		frame.repaint();;
+		frame.repaint();
 	}
 	
 	//Splitting it into initializing what the buttons do
@@ -48,8 +72,8 @@ public class GuiProgram extends JFrame{
 		
 	    loginButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) { 
-			    String loginName = loginNameBox.getText();
-			    String loginPassword = loginPasswordBox.getText();
+			    loginName = loginNameBox.getText();
+			    loginPassword = loginPasswordBox.getText();
 			    System.out.println("logged in as "+loginName+" with password: "+loginPassword);
 			    if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
 			    	//TODO See if the user exists from the database
@@ -57,13 +81,14 @@ public class GuiProgram extends JFrame{
 					
 					try {
 						Statement s = con.createStatement();
-						String query = "SELECT username, password FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
+						String query = "SELECT * FROM users WHERE username = '" + loginName + "' AND password = '" + loginPassword + "'";
 						//Below line checks if it exists or not
 						ResultSet rs = s.executeQuery(query);
 						if (!rs.next() ) {    
-							 System.out.println("No username/password combo found"); 
+							JOptionPane.showMessageDialog(null, "This username and password combination could not be found.");
 						} 
 						else {
+							loggedInUserId = rs.getInt(1);
 							drawLoggedInScreen();	
 						}
 					} catch (SQLException e1) {
@@ -75,8 +100,8 @@ public class GuiProgram extends JFrame{
 	    });
 	    signUpButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) { 
-				String loginName = loginNameBox.getText();
-				String loginPassword = loginPasswordBox.getText();
+				loginName = loginNameBox.getText();
+				loginPassword = loginPasswordBox.getText();
 				System.out.println("signed up as "+loginName+" with password: "+loginPassword);
 				if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
 					//TODO add user info in the database
@@ -86,7 +111,7 @@ public class GuiProgram extends JFrame{
 						String query = "SELECT username FROM users WHERE username = '" + loginName + "'";
 						ResultSet rs = s.executeQuery(query);
 						if (rs.next()){
-							System.out.println("This username is already used");
+							JOptionPane.showMessageDialog(null, "This username is already used.");
 						}
 						else {
 							String insertionQuery = "INSERT INTO users VALUES(DEFAULT, '" + loginName + "', '" + loginPassword + "', CURRENT_TIMESTAMP, 0)";
@@ -264,7 +289,9 @@ public class GuiProgram extends JFrame{
 	    try{
 	    	DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 	    	//Change the below line to match your oracle username/password
-	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_i2m8", "a92859115");
+	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2n8", "a39088125");
+	    	//con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:ug", "ora_r9j8", "a15093123");
+
 	    }catch(Exception e){
 	    	e.printStackTrace();
 	    }

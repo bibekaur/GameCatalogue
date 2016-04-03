@@ -41,8 +41,8 @@ toTime TIMESTAMP NOT NULL,
 regular_userId INTEGER NOT NULL,
 moderator_userId INTEGER NOT NULL,
 PRIMARY KEY (fromDate, fromTime, toDate, toTime, regular_userId, moderator_userId),
-FOREIGN KEY (regular_userId) REFERENCES users(userId),
-FOREIGN KEY (moderator_userId) REFERENCES users(userId));
+FOREIGN KEY (regular_userId) REFERENCES users(userId) ON DELETE CASCADE,
+FOREIGN KEY (moderator_userId) REFERENCES users(userId) );
 
 CREATE TABLE game
 ( gameId INTEGER NOT NULL PRIMARY KEY,
@@ -95,9 +95,10 @@ CREATE TABLE owns
 gameId INTEGER NOT NULL,
 since DATE NOT NULL,
 rating INTEGER,
+CONSTRAINT check_owns_rating CHECK (rating BETWEEN 1 and 10),
 PRIMARY KEY (userId,gameId),
-FOREIGN KEY (userId) references users(userId),
-FOREIGN KEY (gameId) references game(gameId));
+FOREIGN KEY (userId) references users(userId) ON DELETE CASCADE,
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE);
 
 CREATE TABLE review
 ( rId INTEGER NOT NULL,
@@ -105,8 +106,9 @@ description VARCHAR(3000) NOT NULL,
 rating INTEGER NOT NULL,
 userId INTEGER NOT NULL,
 gameId INTEGER NOT NULL,
+CONSTRAINT check_review_rating CHECK (rating between 1 and 10),
 PRIMARY KEY (rId, userId, gameId),
-FOREIGN KEY (userId, gameId) references owns(userId, gameId));
+FOREIGN KEY (userId, gameId) references owns(userId, gameId) ON DELETE CASCADE);
 
 CREATE SEQUENCE seq_review;
 
@@ -124,31 +126,33 @@ pId INTEGER NOT NULL,
 price FLOAT,
 releaseDate DATE,
 PRIMARY KEY (gameId, pId),
-FOREIGN KEY (gameId) references game(gameId),
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE,
 FOREIGN KEY (pId) references platform(pId));
 
 CREATE TABLE developed
 ( gameId INTEGER NOT NULL,
 dId INTEGER NOT NULL,
 PRIMARY KEY (gameId, dId),
-FOREIGN KEY (gameId) references game(gameId),
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE,
 FOREIGN KEY (dId) references developer(dId));
 
 CREATE TABLE wishes
 ( userId INTEGER NOT NULL,
 gameId INTEGER NOT NULL,
 rank INTEGER NOT NULL,
+CONSTRAINT check_rank CHECK (rank between 1 and 10),
 PRIMARY KEY (userId, gameId),
-FOREIGN KEY (userId) references users(userId),
-FOREIGN KEY (gameId) references game(gameId));
+FOREIGN KEY (userId) references users(userId) ON DELETE CASCADE,
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE);
 
 CREATE TABLE rate
 ( rater_userId INTEGER NOT NULL,
 rated_userId INTEGER NOT NULL,
 rating INTEGER NOT NULL,
+CONSTRAINT check_rate_rating CHECK (rating BETWEEN 1 and 10),
 PRIMARY KEY (rater_userId,rated_userId),
-FOREIGN KEY (rater_userId) references users(userId),
-FOREIGN KEY (rated_userId) references users(userId));
+FOREIGN KEY (rater_userId) references users(userId) ON DELETE CASCADE,
+FOREIGN KEY (rated_userId) references users(userId) ON DELETE CASCADE);
 
 insert into users
 values (DEFAULT, 'mod_user', 'mod_user', CURRENT_TIMESTAMP,1);
@@ -229,6 +233,15 @@ insert into developed
 values (1, 1);
 
 insert into developed
+<<<<<<< HEAD
+=======
+values (1, 2);
+
+insert into developed
+values (1, 3);
+
+insert into developed
+>>>>>>> integrate_platform
 values (2, 6);
 
 insert into developed
@@ -287,3 +300,55 @@ values (9, 4, 39.99, '2014-11-21');
 
 insert into available
 values (10, 4, 39.99, '2014-11-21');
+
+insert into wishes
+values (1, 5, 1);
+
+insert into wishes
+values (1, 1, 2);
+
+insert into wishes
+values (1, 2, 4);
+
+insert into wishes
+values (1, 3, 3);
+
+insert into owns
+values (1, 7, CURRENT_TIMESTAMP, 10);
+
+insert into owns
+values (1, 9, CURRENT_TIMESTAMP, 8);
+
+insert into owns
+values (2, 7, CURRENT_TIMESTAMP, 10);
+
+insert into owns
+values (2, 10, CURRENT_TIMESTAMP, 9);
+
+insert into owns
+values (3, 1, CURRENT_TIMESTAMP, 5);
+
+insert into owns
+values (3, 2, CURRENT_TIMESTAMP, 6);
+
+insert into owns
+values (3, 4, CURRENT_TIMESTAMP, 9);
+
+insert into owns
+values (3, 6, CURRENT_TIMESTAMP, 1);
+
+insert into owns
+values (3, 7, CURRENT_TIMESTAMP, 10);
+
+insert into review
+values (DEFAULT, 'Fire Emblem: Conquest was a really great game! The strategy involved was excellent. Chapter 10 was brutal, but it was really satisfying to play!', 10, 1, 7);
+
+insert into review
+values (DEFAULT, 'it was alright', 8, 3, 1);
+
+insert into review
+values (DEFAULT, 'it was alright', 8, 3, 4);
+
+insert into review
+values (DEFAULT, 'it was alright', 9, 3, 7);
+
