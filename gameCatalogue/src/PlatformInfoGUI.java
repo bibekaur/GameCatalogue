@@ -64,13 +64,6 @@ public class PlatformInfoGUI extends JFrame{
 		try {
 			Statement s = con.createStatement();
 			
-			String st = "SELECT gameId, gameName, gameGenre, avg_rating"
-            + " FROM (SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating"
-            + " FROM game g INNER JOIN review r ON g.gameId = r.gameId"
-            + " GROUP BY g.gameId, g.gameName, g.gameGenre"
-            + " ORDER BY avg_rating)"
-            + " WHERE ROWNUM <= 10";
-			
 			String query = "SELECT gameName, gameGenre, avg_rating "
 					+ "FROM "
 					+ "(SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating "
@@ -101,6 +94,8 @@ public class PlatformInfoGUI extends JFrame{
 			if (columnsNumber < 10){
 				System.out.println("OK");
 				String number = new Integer(10-columnsNumber).toString();
+				//On a side note, this is quite possibly
+				//One of the ugliest queries I've ever written
 				query = "SELECT gameName, gameGenre "
 						+ "FROM "
 						+ "(SELECT g.gameId, g.gameName, g.gameGenre "
