@@ -57,16 +57,21 @@ public class DeveloperInfoGUI extends JFrame{
 		
 		try{
 			Statement s = con.createStatement();
-			String query = "SELECT g.gameName, g.gameGenre, g.gameId, o.rating, o.since FROM owns o, game g WHERE o.userId = '" + devId + "' AND o.gameId = g.gameId";
+			//String query = "SELECT g.gameName, g.gameGenre, g.gameId, o.rating, o.since FROM owns o, game g WHERE o.userId = '" + devId + "' AND o.gameId = g.gameId";
+            String query = "SELECT gameId, gameName, gameGenre, avg_rating"
+                    + " FROM (SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating"
+                    + " FROM game g INNER JOIN review r ON g.gameId = r.gameId INNER JOIN developed m ON g.gameId = m.gameId AND m.dId = "+devId
+                    + " GROUP BY g.gameId, g.gameName, g.gameGenre"
+                    + " ORDER BY avg_rating)"
+                    + " WHERE ROWNUM <= 10";
 			ResultSet rs = s.executeQuery(query);
 			while (rs.next()) {    
-				 String gameName = rs.getString(1); 
-				 String gameGenre = rs.getString(2);
-				 Integer gameId = rs.getInt(3);
+				 String gameName = rs.getString(2); 
+				 String gameGenre = rs.getString(3);
+				 Integer gameId = rs.getInt(1);
 				 Integer rating = rs.getInt(4);
-				 String since = rs.getString(5);
 				 top5games.add(new StoreData(gameId, gameName, gameGenre, rating, since, new JButton("Game: "+gameName+" : "+gameGenre),
-						                new JTextArea("Rated: "+rating.toString()+" On "+since)));
+						                new JTextArea("Rated: "+rating.toString())));
 				 
 				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
 			} 
@@ -96,6 +101,18 @@ public class DeveloperInfoGUI extends JFrame{
             }
         }
 		
+        
+        for (StoreData sd : top5games) {
+            sd.getButton().addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				GameInfoGUI game = new GameInfoGUI(sd.getGameId(), loggedInUserId, con);
+                game.setPanel(frame);
+			}
+		});
+        }
+        
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();
