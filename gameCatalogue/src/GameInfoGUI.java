@@ -16,12 +16,18 @@ public class GameInfoGUI extends JFrame{
 	private Integer gameId;
 	private String gameName;
 	private String gameGenre;
-	private Integer averageRating = 0;
+	private Integer averageRating;
 	
 	private boolean isOwned;
 	private boolean isWishlist;
 	private Integer ownedRating;
 	private Integer wishlistRating;
+	
+	private String platformName;
+	private Integer platformId;
+	
+	private String devName;
+	private Integer devId;
 	
 	private JPanel panel;
 	
@@ -47,17 +53,57 @@ public class GameInfoGUI extends JFrame{
 		
 		checkIfOwned();
 		checkInWishlist();
+		getAverageRating(); //TODO
+		getDeveloper();
+		getPlatform();
 		
 		//TODO: Check if the user is a moderator because they can delete the game
 		
-		//TODO: Get the average rating?
-		
-		//TODO: Get the dev
-		
-		//TODO: Get the platform
 	}
 	
-
+	private void getDeveloper(){
+		try{
+			Statement s = con.createStatement();
+			String query = "SELECT r.dName, r.dId " +
+						"FROM developed d INNER JOIN developer r on d.dId = r.dId " + 
+						"WHERE d.gameId=" + gameId;
+			ResultSet rs = s.executeQuery(query);
+			
+			if (rs.next()){
+				devName = rs.getString("dName");
+				devId = rs.getInt("dId");
+			}
+			
+		} catch (SQLException e1){
+			e1.printStackTrace();
+		}
+	}
+	
+	private void getPlatform(){
+		try{
+			Statement s = con.createStatement();
+			String query = "SELECT p.pName, p.pId " + 
+							"FROM available a INNER JOIN platform p ON a.pId = p.pId " + 
+							"WHERE a.gameId =" + gameId;
+			ResultSet rs = s.executeQuery(query);
+			
+			if (rs.next()){
+				platformName = rs.getString("pName");
+				platformId = rs.getInt("pId");
+				
+			}
+			
+		} catch (SQLException e1){
+			e1.printStackTrace();
+		}
+	}
+	
+	private void getAverageRating(){
+		//TODO:
+		
+		//averageRating = something
+	}
+	
 	private void checkIfOwned(){
 		try {
 			Statement s = con.createStatement();
@@ -330,6 +376,10 @@ public class GameInfoGUI extends JFrame{
 		//"Remove from wishlist" button (only remove if user has it in their wishlist)
 		JButton removeWishlistButton = new JButton("Remove from my wishlist");
 		removeWishlistButtonListener(removeWishlistButton);
+		
+		//TODO: developer button
+		
+		//TODO: platform button
 		
 		panel.add(removeWishlistButton);
 		panel.add(wishlistButton);
