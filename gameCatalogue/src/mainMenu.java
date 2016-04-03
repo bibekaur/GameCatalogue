@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class MainMenu extends JFrame{
+public class mainMenu extends JFrame{
     private Connection con;
     private JFrame frame;
 
@@ -39,7 +39,7 @@ public class MainMenu extends JFrame{
     private ArrayList<JButton> topUsersButtons;
     private ArrayList<JLabel> topUsersLabels;
 
-    public MainMenu(Connection sqlConnection, Integer userId) {
+    public mainMenu(Connection sqlConnection, Integer userId) {
         con = sqlConnection;
         loggedInUserId = userId;
 
@@ -243,7 +243,7 @@ public class MainMenu extends JFrame{
         }
     }
 
-    private JButton createButtonToGames(Integer gameId) {
+    private JButton createButtonToGames(final Integer gameId) {
         JButton button = new JButton("Details");
         button.addActionListener(new ActionListener() {
             @Override
@@ -254,7 +254,7 @@ public class MainMenu extends JFrame{
         return button;
     }
 
-    private JButton createButtonToUsers(Integer userId) {
+    private JButton createButtonToUsers(final Integer userId) {
         JButton button = new JButton("Details");
         button.addActionListener(new ActionListener() {
             @Override
