@@ -31,7 +31,11 @@ public class DeveloperInfoGUI extends JFrame{
 			
 			while (rs.next()){
 				this.devName = rs.getString(2);
-				this.founded = rs.getString(3).toString();
+				this.founded = rs.getString(3);
+				
+				if (this.founded == null || this.founded.isEmpty()){
+					this.founded = "n/a.";
+				}
 			}
 
 			System.out.println("devId is: " + this.devId.toString());
@@ -49,7 +53,7 @@ public class DeveloperInfoGUI extends JFrame{
 		panel = new JPanel();
 		loggedInUserId = loggedIn;
 
-		JTextArea devInfo = new JTextArea("Developer: " + devName + "\nFounded in: "+founded.substring(0, founded.indexOf('.')));
+		JTextArea devInfo = new JTextArea("Developer: " + devName + "\nFounded in: "+ founded.substring(0, founded.indexOf('.')));
 		JTextArea top5userInfo = new JTextArea("Top 5 games from "+devName+ ":");
 		
 		panel.add(devInfo);

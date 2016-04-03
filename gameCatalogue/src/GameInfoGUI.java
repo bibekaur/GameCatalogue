@@ -314,7 +314,7 @@ public class GameInfoGUI extends JFrame{
 		});
 	}
 	
-	public void removeWishlistButtonListener(JButton removeButton){
+	public void addRemoveWishlistButtonListener(JButton removeButton){
 		removeButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -343,7 +343,23 @@ public class GameInfoGUI extends JFrame{
 		
 	}
 	
+	private void addDeveloperButtonListener(JButton developerButton){
+		developerButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//Go to the developer's page
+				System.out.println("dev id is: " + devId);
+				DeveloperInfoGUI devGUI = new DeveloperInfoGUI(con, devId);
+				devGUI.setPanel(loggedInUserId, frame);
+				
+			}
+			
+		});
+	}
+	
 	public void setPanel(JFrame frame){
+		this.frame = frame;
 		panel = new JPanel();
 		JTextArea gameInfo = new JTextArea("Name: " + gameName + "\n"
 				+ "Average rating: " + averageRating + "\n"
@@ -375,14 +391,18 @@ public class GameInfoGUI extends JFrame{
 		
 		//"Remove from wishlist" button (only remove if user has it in their wishlist)
 		JButton removeWishlistButton = new JButton("Remove from my wishlist");
-		removeWishlistButtonListener(removeWishlistButton);
+		addRemoveWishlistButtonListener(removeWishlistButton);
 		
 		//TODO: developer button
+		JButton developerButton = new JButton("Developer: " + devName);
+		addDeveloperButtonListener(developerButton);
+		
 		
 		//TODO: platform button
 		
 		//TODO: get newest review
 		
+		panel.add(developerButton);
 		panel.add(removeWishlistButton);
 		panel.add(wishlistButton);
 		panel.add(ownButton);
