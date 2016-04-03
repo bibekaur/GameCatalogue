@@ -1,15 +1,13 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 
+@SuppressWarnings("serial")
 public class DeveloperInfoGUI extends JFrame{
 	private Connection con;
 	private JPanel panel;
@@ -47,7 +45,7 @@ public class DeveloperInfoGUI extends JFrame{
 	}
 
 	
-	public void setPanel(Integer loggedIn, JFrame frame){
+	public void setPanel(Integer loggedIn, final JFrame frame){
 		ArrayList<StoreData> top5games = new ArrayList<StoreData>();
 		
 		panel = new JPanel();
@@ -107,7 +105,7 @@ public class DeveloperInfoGUI extends JFrame{
         }
 		
         
-        for (StoreData sd : top5games) {
+        for (final StoreData sd : top5games) {
             sd.getButton().addActionListener(new ActionListener(){
 
 			@Override

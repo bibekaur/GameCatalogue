@@ -133,7 +133,7 @@ public class GuiProgram extends JFrame{
 	    try{
 	    	DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 	    	//Change the below line to match your oracle username/password
-	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2n8", "a39088125");
+	    	con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:ug", "ora_r9j8", "a15093123");
 	    }catch(Exception e){
 	    	e.printStackTrace();
 	    }
