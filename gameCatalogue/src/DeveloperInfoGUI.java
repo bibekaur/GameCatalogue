@@ -38,9 +38,9 @@ public class DeveloperInfoGUI extends JFrame{
 				}
 			}
 
-			System.out.println("devId is: " + this.devId.toString());
-			System.out.println("devName is: " + devName);
-			System.out.println("joindate is: " + founded);
+			//System.out.println("devId is: " + this.devId.toString());
+			//System.out.println("devName is: " + devName);
+			//System.out.println("joindate is: " + founded);
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
@@ -78,7 +78,7 @@ public class DeveloperInfoGUI extends JFrame{
 				 top5games.add(new StoreData(gameId, gameName, gameGenre, rating, founded, new JButton("Game: "+gameName+" : "+gameGenre),
 						                new JTextArea("Rated: "+rating.toString())));
 				 
-				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString());
+				 //System.out.println(gameName +" "+ gameGenre +" "+ rating.toString());
 			} 
 		}
 		catch (SQLException e1){

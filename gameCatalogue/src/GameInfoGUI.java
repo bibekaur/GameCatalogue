@@ -6,12 +6,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class GameInfoGUI extends JFrame{
 	private Integer loggedInUserId;
 	private Connection con;
 	private JFrame frame;
 	private JLabel ratingLabel;
+	private JTextArea newestReview;
 	
 	private Integer gameId;
 	private String gameName;
@@ -30,6 +32,7 @@ public class GameInfoGUI extends JFrame{
 	private Integer devId;
 	
 	private JPanel panel;
+	ArrayList<JTextArea> reviews = new ArrayList<JTextArea>();
 	
 	public GameInfoGUI (Integer gId, Integer userId, Connection sqlConnection){
 		loggedInUserId = userId;
@@ -53,7 +56,7 @@ public class GameInfoGUI extends JFrame{
 		
 		checkIfOwned();
 		checkInWishlist();
-		getAverageRating(); //TODO
+		getAverageRating(); 
 		getDeveloper();
 		getPlatform();
 		
@@ -99,9 +102,20 @@ public class GameInfoGUI extends JFrame{
 	}
 	
 	private void getAverageRating(){
-		//TODO:
-		
-		//averageRating = something
+		try { //Let's get all the reviews and owns ratings
+			Statement s = con.createStatement();
+			String query = "SELECT AVG(rating) from owns WHERE gameId=" + gameId + " AND userId=" + loggedInUserId;
+			ResultSet rs = s.executeQuery(query);
+			
+			if (rs.next()){
+				averageRating = rs.getInt(1);
+				return;
+			}
+			averageRating = 0;
+			
+		} catch (SQLException e1){
+			e1.printStackTrace();
+		}
 	}
 	
 	private void checkIfOwned(){
@@ -202,17 +216,17 @@ public class GameInfoGUI extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				//Only insert into own if they don't own it already
 				try{
-					Statement s = con.createStatement();
-					String query = "SELECT * from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
-					ResultSet rs = s.executeQuery(query);
 					
-					if (rs.next()){
+					checkIfOwned();
+					
+					if (isOwned){
 						//already owns this game, don't insert
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You already own this game");
 						return;
 					}
 					else {
-						query = "INSERT into owns VALUES ("+ loggedInUserId + "," + gameId + ", CURRENT_TIMESTAMP, NULL)";
+						Statement s = con.createStatement();
+						String query = "INSERT into owns VALUES ("+ loggedInUserId + "," + gameId + ", CURRENT_TIMESTAMP, NULL)";
 						s.executeQuery(query);
 					}
 					
@@ -236,7 +250,8 @@ public class GameInfoGUI extends JFrame{
 				}
 							
 				//Update label
-				ratingLabel.setText("Please rate this game");				
+				ratingLabel.setText("Please rate this game");		
+				isOwned = true;
 			}
 			
 		});
@@ -249,12 +264,10 @@ public class GameInfoGUI extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				
 				try{ //Check if the user owns the game, don't add to wishlist if so (just return)
-					Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-			                 ResultSet.CONCUR_UPDATABLE);
-					String query = "SELECT * from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
-					ResultSet rs = s.executeQuery(query);
 					
-					if (rs.next()){
+					checkIfOwned();
+					
+					if (isOwned){
 						//already owns this game, don't insert
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You can't add a game you own to the wishlist");
 						return;
@@ -278,12 +291,14 @@ public class GameInfoGUI extends JFrame{
 						
 					
 					//Check if the game is already in the wishlist
-					query = "SELECT rank from wishes WHERE userId=" + loggedInUserId + " AND gameId=" + gameId;
-					rs = s.executeQuery(query);
+					Statement s = con.createStatement();
+					String query = "SELECT rank from wishes WHERE userId=" + loggedInUserId + " AND gameId=" + gameId;
+					ResultSet rs = s.executeQuery(query);
 					
 					if (rs.next()){ //Update the rank
 						Integer oldRank = rs.getInt("rank");
 						rs.updateInt("rank", rank);
+						rs.updateRow();
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), gameName + "'s ranking has been changed from " + oldRank + " to " + rank);
 						return;
 					}
@@ -358,6 +373,144 @@ public class GameInfoGUI extends JFrame{
 		});
 	}
 	
+	private void displayLowestFiveReviews(){
+		try {
+			
+			Statement s = con.createStatement();
+			String query = "SELECT * "
+					+ "from review r INNER JOIN users u ON r.userId = u.userId "
+					+ "WHERE r.gameId =" + gameId + " AND ROWNUM <= 5"
+										+ "ORDER BY r.rating ASC ";
+			ResultSet rs = s.executeQuery(query);
+								
+			for (JTextArea r : this.reviews){
+				panel.remove(r);
+			}
+			
+			this.reviews = new ArrayList<JTextArea>();
+			
+			while (rs.next()){
+				String username = rs.getString("username");
+				String description = rs.getString("description");
+				Integer rating = rs.getInt("rating");
+				
+				this.reviews.add(new JTextArea(description + "\nUser: " + username + " Rating: " + rating));
+				
+			}
+			
+			for (JTextArea r : this.reviews){
+				panel.add(r);
+			}
+			
+			
+		} catch (SQLException e1){
+			e1.printStackTrace();
+		}
+	}
+	
+	private void displayTopFiveReviews(){
+		try {
+			Statement s = con.createStatement();
+			String query = "SELECT * "
+					+ "from review r INNER JOIN users u ON r.userId = u.userId "
+					+ "WHERE r.gameId =" + gameId + " AND ROWNUM <= 5"
+					+ "ORDER BY r.rating DESC ";
+			ResultSet rs = s.executeQuery(query);
+					
+			for (JTextArea r : this.reviews){
+				panel.remove(r);
+			}
+			
+			this.reviews = new ArrayList<JTextArea>();
+			
+			while (rs.next()){
+				String username = rs.getString("username");
+				String description = rs.getString("description");
+				Integer rating = rs.getInt("rating");
+				
+				this.reviews.add(new JTextArea(description + "\nUser: " + username + " Rating: " + rating));
+				
+			}
+			
+			for (JTextArea r : this.reviews){
+				panel.add(r);
+			}
+			
+		} catch (SQLException e1){
+			e1.printStackTrace();
+		}
+	}
+	
+	private void addReviewButtonListener(JButton reviewButton){
+		reviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Integer rating;
+				String description;
+				
+				//Gotta check if they own it
+				if (!isOwned){
+					JOptionPane.showMessageDialog(frame, "You must own this game to review it");
+					return;
+
+				}
+				
+				try {
+					rating = Integer.parseInt( (String) JOptionPane.showInputDialog(frame, 
+							"Please enter a rating between 1 and 10"));
+				} catch (NumberFormatException e){
+					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
+					return;
+				}
+				
+				//TODO: we should have a check in the table and handle the error
+				if (rating > 10 || rating < 1){
+					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
+					return;
+				}
+				
+				description = (String) JOptionPane.showInputDialog(frame, 
+						"Please enter the description of the review (should not exceed 3000 characters)");
+				if (description.length() > 3000 ){
+					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Your description is too long (" + description.length() + " characters long)");
+					return;
+				}
+				else if (description == null || description.length() == 0){
+					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a description");
+					return;
+				}
+				
+				try{ //either update or insert the review
+					Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+			                 ResultSet.CONCUR_UPDATABLE);
+					String query = "SELECT description, rating "
+							+ "FROM review "
+							+ "WHERE userId=" + loggedInUserId + " AND gameId=" + gameId;
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						rs.updateString("description", description);
+						rs.updateInt("rating", rating);
+						rs.updateRow();
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Your review has been updated");
+						return;
+						
+					}
+					
+					query = "INSERT into review VALUES (DEFAULT,'" + description + "'," + rating + "," + loggedInUserId + "," + gameId + ")";
+					System.out.println(query);
+					s.executeQuery(query);
+					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Your review has been saved");
+	
+				} catch (SQLException e1){
+					e1.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	
 	public void setPanel(JFrame frame){
 		this.frame = frame;
 		panel = new JPanel();
@@ -393,15 +546,52 @@ public class GameInfoGUI extends JFrame{
 		JButton removeWishlistButton = new JButton("Remove from my wishlist");
 		addRemoveWishlistButtonListener(removeWishlistButton);
 		
-		//TODO: developer button
+		//Clicking on this button switches to the developer gui
 		JButton developerButton = new JButton("Developer: " + devName);
 		addDeveloperButtonListener(developerButton);
 		
+		//"Review this game" button
+		JButton reviewGameButton = new JButton("Review this game");
+		addReviewButtonListener(reviewGameButton);
+		
+		//"Delete my review" button
 		
 		//TODO: platform button
 		
-		//TODO: get newest review
+		//Radio buttons to toggle between top 5 and bottom 5 reviews
+		JRadioButton topFiveButton = new JRadioButton("5 Highest Reviews");
+		JRadioButton lowestFiveButton = new JRadioButton("5 Lowest Reviews");
+		ButtonGroup reviewButtonGroup = new ButtonGroup();
+		reviewButtonGroup.add(topFiveButton);
+		reviewButtonGroup.add(lowestFiveButton);
 		
+		topFiveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				displayTopFiveReviews();
+				frame.revalidate();
+				frame.repaint();
+			}
+				
+				
+		});
+		
+		lowestFiveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				displayLowestFiveReviews();
+				frame.revalidate();
+				frame.repaint();
+			}
+				
+				
+		});
+		
+		panel.add(reviewGameButton);
+		panel.add(topFiveButton);
+		panel.add(lowestFiveButton);
 		panel.add(developerButton);
 		panel.add(removeWishlistButton);
 		panel.add(wishlistButton);
