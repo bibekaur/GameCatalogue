@@ -43,8 +43,8 @@ toTime TIMESTAMP NOT NULL,
 regular_userId INTEGER NOT NULL,
 moderator_userId INTEGER NOT NULL,
 PRIMARY KEY (fromDate, fromTime, toDate, toTime, regular_userId, moderator_userId),
-FOREIGN KEY (regular_userId) REFERENCES users(userId),
-FOREIGN KEY (moderator_userId) REFERENCES users(userId));
+FOREIGN KEY (regular_userId) REFERENCES users(userId) ON DELETE CASCADE,
+FOREIGN KEY (moderator_userId) REFERENCES users(userId) );
 
 CREATE TABLE game
 ( gameId INTEGER NOT NULL PRIMARY KEY,
@@ -98,8 +98,8 @@ gameId INTEGER NOT NULL,
 since DATE NOT NULL,
 rating INTEGER,
 PRIMARY KEY (userId,gameId),
-FOREIGN KEY (userId) references users(userId),
-FOREIGN KEY (gameId) references game(gameId));
+FOREIGN KEY (userId) references users(userId) ON DELETE CASCADE,
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE);
 
 CREATE TABLE review
 ( rId INTEGER NOT NULL,
@@ -108,7 +108,7 @@ rating INTEGER NOT NULL,
 userId INTEGER NOT NULL,
 gameId INTEGER NOT NULL,
 PRIMARY KEY (rId, userId, gameId),
-FOREIGN KEY (userId, gameId) references owns(userId, gameId));
+FOREIGN KEY (userId, gameId) references owns(userId, gameId) ON DELETE CASCADE);
 
 CREATE SEQUENCE seq_review;
 
@@ -126,14 +126,14 @@ pId INTEGER NOT NULL,
 price FLOAT,
 releaseDate DATE,
 PRIMARY KEY (gameId, pId),
-FOREIGN KEY (gameId) references game(gameId),
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE,
 FOREIGN KEY (pId) references platform(pId));
 
 CREATE TABLE developed
 ( gameId INTEGER NOT NULL,
 dId INTEGER NOT NULL,
 PRIMARY KEY (gameId, dId),
-FOREIGN KEY (gameId) references game(gameId),
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE,
 FOREIGN KEY (dId) references developer(dId));
 
 CREATE TABLE wishes
@@ -141,16 +141,16 @@ CREATE TABLE wishes
 gameId INTEGER NOT NULL,
 rank INTEGER NOT NULL,
 PRIMARY KEY (userId, gameId),
-FOREIGN KEY (userId) references users(userId),
-FOREIGN KEY (gameId) references game(gameId));
+FOREIGN KEY (userId) references users(userId) ON DELETE CASCADE,
+FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE);
 
 CREATE TABLE rate
 ( rater_userId INTEGER NOT NULL,
 rated_userId INTEGER NOT NULL,
 rating INTEGER NOT NULL,
 PRIMARY KEY (rater_userId,rated_userId),
-FOREIGN KEY (rater_userId) references users(userId),
-FOREIGN KEY (rated_userId) references users(userId));
+FOREIGN KEY (rater_userId) references users(userId) ON DELETE CASCADE,
+FOREIGN KEY (rated_userId) references users(userId) ON DELETE CASCADE);
 
 insert into users
 values (DEFAULT, 'mod_user', 'mod_user', CURRENT_TIMESTAMP,1);
