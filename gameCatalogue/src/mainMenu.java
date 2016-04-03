@@ -15,15 +15,25 @@ public class MainMenu extends JFrame{
     private JButton userProfileButton;
     private JButton loginButton;
 
+    private JButton searchButton;
+    private JTextField searchField;
+    private String[] options = {"Game", "Platform", "Developer"};
+    private JComboBox<String> searchOptions;
+
     /* Logging in box */
     private JTextField loginNameBox;
     private JTextField loginPasswordBox;
-    private JPanel gamePanel;
     private boolean isLoggedIn;
 
     /* Top 10 games */
-    private ArrayList<JButton> gamesButtons;
-    private ArrayList<JLabel> gamesLabels;
+    private JPanel topGamePanel;
+    private ArrayList<JButton> topGamesButtons;
+    private ArrayList<JLabel> topGamesLabels;
+
+    /* Top Games Played by All Users */
+    private JPanel allGamePanel;
+    private ArrayList<JButton> allGamesButtons;
+    private ArrayList<JLabel> allGamesLabels;
 
     public MainMenu() {
         setTitle("Game Catalogue");
@@ -71,11 +81,50 @@ public class MainMenu extends JFrame{
                 }
             }
         });
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String search = searchField.getText();
+                String option = (String) searchOptions.getSelectedItem();
+                try {
+                    if(!search.isEmpty()) {
+                        Statement s = con.createStatement();
+                        String query;
+
+                        if (option.contentEquals("Game")){
+                            query = "SELECT gameName, gameGenre, pName"
+                                + " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
+                                + " INNER JOIN platform p ON a.pId = p.pId"
+                                + " WHERE UPPER(gameName) LIKE UPPER('%" + search + "%')";
+                        }
+                        else if (option.contentEquals("Platform")){
+                            query = "SELECT pName, cost, releaseDate "
+                                    + "FROM platform "
+                                    + "WHERE UPPER(pName) LIKE UPPER('%" + search + "%')";
+                        }
+                        else {
+                            query = "SELECT dName "
+                                    + "FROM developer "
+                                    + "WHERE UPPER(dName) LIKE UPPER('%" + search + "%')";
+                        }
+                        ResultSet rs = s.executeQuery(query);
+                        if (!rs.isBeforeFirst()){
+                            System.out.println("Could not find a game matching this query");}
+                        else {
+                            System.out.println("Found something");
+                        }
+                    }
+                } catch(SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
     }
 
     public void initTopGames() {
-        gamesButtons = new ArrayList<JButton>();
-        gamesLabels = new ArrayList<JLabel>();
+        topGamesButtons = new ArrayList<JButton>();
+        topGamesLabels = new ArrayList<JLabel>();
 
         try {
             Statement s = con.createStatement();
@@ -93,17 +142,57 @@ public class MainMenu extends JFrame{
                 String gameGenre = rs.getString(3);
                 Integer rating = rs.getInt(4);
                 JLabel gameInfo = new JLabel(gameName + " " + gameGenre + " " + rating.toString());
-                gamesLabels.add(gameInfo);
-                gamesButtons.add(createButton(gameId));
+                topGamesLabels.add(gameInfo);
+                topGamesButtons.add(createButton(gameId));
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        for(int i = 0; i < gamesButtons.size(); i++) {
-            gamePanel.add(gamesLabels.get(i));
-            gamePanel.add(gamesButtons.get(i));
+        topGamePanel.removeAll();
+        final JLabel topGamesLabel = new JLabel("Top 10 Games!");
+        SpringLayout layout = new SpringLayout();
+        topGamePanel.add(topGamesLabel);
+        for(int i = 0; i < topGamesButtons.size(); i++) {
+            topGamePanel.add(topGamesLabels.get(i));
+            topGamePanel.add(topGamesButtons.get(i));
+            if(i == 0) {
+                layout.putConstraint(SpringLayout.NORTH, topGamesLabels.get(i), 50, SpringLayout.SOUTH, topGamesLabel);
+                layout.putConstraint(SpringLayout.NORTH, topGamesButtons.get(i), 40, SpringLayout.SOUTH, topGamesLabel);
+            } else {
+                layout.putConstraint(SpringLayout.NORTH, topGamesLabels.get(i), 40, SpringLayout.SOUTH, topGamesLabels.get(i-1));
+                layout.putConstraint(SpringLayout.NORTH, topGamesButtons.get(i), 40, SpringLayout.SOUTH, topGamesButtons.get(i-1));
+            }
+            layout.putConstraint(SpringLayout.WEST, topGamesButtons.get(i), 2, SpringLayout.EAST, topGamesLabels.get(i));
+        }
+        topGamePanel.setLayout(layout);
+    }
+
+    public void initGamesByAll() {
+        allGamesButtons = new ArrayList<JButton>();
+        allGamesLabels = new ArrayList<JLabel>();
+
+        try {
+            Statement s = con.createStatement();
+            String query = "SELECT g.gameId, g.gameName, g.gameGenre"
+                    + " FROM game g INNER JOIN owns o ON g.gameId = o.gameId"
+                    + " WHERE o.userID IN (SELECT userID"
+                    + " FROM users u)"
+                    + " GROUP BY g.gameId, gameName, gameGenre"
+                    + " HAVING COUNT(*) = (SELECT COUNT(*) FROM users)";
+            ResultSet rs = s.executeQuery(query);
+            while(rs.next()) {
+                Integer gameId = rs.getInt(1);
+                String gameName = rs.getString(2);
+                String gameGenre = rs.getString(3);
+                JLabel gameInfo = new JLabel(gameName + " " + gameGenre);
+                allGamesLabels.add(gameInfo);
+                allGamesButtons.add(createButton(gameId));
+                System.out.println(gameName + " " + gameGenre);
+            }
+        } catch(SQLException e1) {
+            e1.printStackTrace();
         }
     }
 
@@ -138,6 +227,9 @@ public class MainMenu extends JFrame{
         toolbarPanel.setLayout(new FlowLayout());
         userProfileButton = new JButton("My Profile");
         loginButton = new JButton("Login");
+        searchOptions = new JComboBox<String>(options);
+        searchButton = new JButton("Search");
+        searchField = new JTextField(30);
 
         /* Login Panel */
         loginPanel = new JPanel(new GridLayout(2,2));
@@ -151,11 +243,13 @@ public class MainMenu extends JFrame{
         loginPanel.add(loginPassword);
         loginPanel.add(loginPasswordBox);
 
-        gamePanel = new JPanel();
+        topGamePanel = new JPanel();
+        allGamePanel = new JPanel();
 
-        drawMenu();
         init();
         initTopGames();
+        initGamesByAll();
+        drawMenu();
 
     }
 
@@ -167,12 +261,12 @@ public class MainMenu extends JFrame{
         } else {
             toolbarPanel.add(loginButton);
         }
-
-        JTextField test = new JTextField();
-        gamePanel.add(test);
+        toolbarPanel.add(searchOptions);
+        toolbarPanel.add(searchField);
+        toolbarPanel.add(searchButton);
 
         mainPanel.add(toolbarPanel);
-        mainPanel.add(gamePanel);
+        mainPanel.add(topGamePanel);
         frame.setContentPane(mainPanel);
         frame.setResizable(true);
         frame.setVisible(true);
