@@ -38,10 +38,10 @@ public class GuiProgram extends JFrame{
 	
 	public void drawLoggedInScreen(){
 		frame.remove(panel);
-		gameGUI = new GameInfoGUI(1, 2, con);
-		gameGUI.setPanel(frame);
-		//userGUI = new UserProfileGUI(con, 3);
-		//userGUI.setPanel(loggedInUserId, frame);
+		//gameGUI = new GameInfoGUI(1, 2, con);
+		//gameGUI.setPanel(frame);
+		userGUI = new UserProfileGUI(con, 3);
+		userGUI.setPanel(loggedInUserId, frame);
 		//DeveloperInfoGUI devGUI = new DeveloperInfoGUI(con, 5);
 		//devGUI.setPanel(loggedInUserId, frame);
 		//panel.add(searchField);

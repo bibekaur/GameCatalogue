@@ -189,46 +189,51 @@ public class UserProfileGUI extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					//Get the user rating input
-					Integer rating = -1;
+					Integer rating;
 					try {
 						rating = Integer.parseInt(rateText.getText());
-						if (rating > 10 || rating < 1){
-							rating = -1;
-							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
-						}
 											
 					} catch(NumberFormatException e){
-						rating = -1;
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+						return;
 					}
 
-					if (rating != -1){
-						try{
-							Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					                 ResultSet.CONCUR_UPDATABLE);
-							//TODO: apparnetly need to use check statement, also display what the rating is using a label
-							//Check if we've already rated this user
-							String query = "SELECT rating from rate WHERE rater_userId = " + loggedInUserId + "AND rated_userId = " + userId;
-							ResultSet rs = s.executeQuery(query);
+					try{
+						Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					                ResultSet.CONCUR_UPDATABLE);
+						//TODO: apparnetly need to use check statement, also display what the rating is using a label
+						//Check if we've already rated this user
+						String query = "SELECT rating from rate WHERE rater_userId = " + loggedInUserId + "AND rated_userId = " + userId;
+						ResultSet rs = s.executeQuery(query);
 							
-							if (rs.next()){ //We've already rated them, update the entry
-								Integer oldRating = rs.getInt(1);
+						if (rs.next()){ //We've already rated them, update the entry
+							Integer oldRating = rs.getInt(1);
+							try{
 								rs.updateInt(1, rating);
 								rs.updateRow();
 								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), 
-										"You updated " + username + "'s rating from " + oldRating + " to "  + rating);
+											"You updated " + username + "'s rating from " + oldRating + " to "  + rating);
+							} catch (SQLException e1){
+								JOptionPane.showMessageDialog(frame, "You didn't enter a rating between 1 and 10. Please enter an integer between 1 and 10");
+								return;
+							}
 	
-							}
-							else {
-								query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + userRating + ")";
+						}
+						else {
+							try {
+								query = "INSERT into rate VALUES (" +loggedInUserId + "," + userId + "," + rating + ")";
 								s.executeUpdate(query);
-								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You gave " + username+ " a " + userRating + " rating!");
+								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You gave " + username+ " a " + rating + " rating!");
+							} catch (SQLException e1){
+								JOptionPane.showMessageDialog(frame, "You didn't enter a rating between 1 and 10. Please enter an integer between 1 and 10");
+								return;
 							}
+						}
+						
 							
-						}
-						catch (SQLException e1){
-							e1.printStackTrace();
-						}
+					}
+					catch (SQLException e1){
+						e1.printStackTrace();
 					}
 				}
 											

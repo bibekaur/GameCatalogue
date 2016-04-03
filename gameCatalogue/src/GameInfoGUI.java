@@ -276,11 +276,6 @@ public class GameInfoGUI extends JFrame{
 					try{
 						rank = Integer.parseInt((String) JOptionPane.showInputDialog((JFrame) SwingUtilities.getRoot(panel), "Where does this game rank in your wishlist (1-10)?"));
 							
-						if (rank > 10 || rank < 1){
-							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
-							return;
-						}
-							
 					} catch (NumberFormatException e){
 						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
 						return;
@@ -294,10 +289,16 @@ public class GameInfoGUI extends JFrame{
 					
 					if (rs.next()){ //Update the rank
 						Integer oldRank = rs.getInt("rank");
-						rs.updateInt("rank", rank);
-						rs.updateRow();
-						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), gameName + "'s ranking has been changed from " + oldRank + " to " + rank);
+						try {
+							rs.updateInt("rank", rank);
+							rs.updateRow();
+							JOptionPane.showMessageDialog(frame, gameName + "'s ranking has been changed from " + oldRank + " to " + rank);
+						} catch (SQLException e1){
+							JOptionPane.showMessageDialog(frame, "You didn't enter an integer between 1 and 10. Please enter an integer between 1 and 10");
+							
+						}
 						return;
+						
 					}
 					
 					//Check if a game with that rank already exists
@@ -314,13 +315,18 @@ public class GameInfoGUI extends JFrame{
 						
 					//if rank is free then insert
 					query = "INSERT into wishes VALUES ("+ loggedInUserId + "," + gameId + "," + rank + ")";
-					s.executeQuery(query);
+					try {
+						s.executeQuery(query);
+					} catch (SQLException e1){
+						JOptionPane.showMessageDialog(frame, "You didn't enter an integer between 1 and 10. Please enter an integer between 1 and 10");
+						return;
+					}
 					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), gameName + " has rank " + rank + " in your wishlist");
 				}
 					catch (SQLException e1){
 					e1.printStackTrace();
 				}
-				//
+				
 			}
 			
 		});
@@ -461,12 +467,6 @@ public class GameInfoGUI extends JFrame{
 					return;
 				}
 				
-				//TODO: we should have a check in the table and handle the error
-				if (rating > 10 || rating < 1){
-					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
-					return;
-				}
-				
 				description = (String) JOptionPane.showInputDialog(frame, 
 						"Please enter the description of the review (should not exceed 3000 characters)");
 				if (description.length() > 3000 ){
@@ -488,15 +488,26 @@ public class GameInfoGUI extends JFrame{
 					
 					if (rs.next()){
 						rs.updateString("description", description);
-						rs.updateInt("rating", rating);
-						rs.updateRow();
-						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Your review has been updated");
+						try {
+							rs.updateInt("rating", rating);
+							rs.updateRow();
+							JOptionPane.showMessageDialog(frame, "Your review has been updated");
+						} catch (SQLException e1){
+							JOptionPane.showMessageDialog(frame, "You didn't enter a rating between 1 and 10. Please choose a rating between 1 and 10.");
+						}
+
 						return;
 						
 					}
 					
 					query = "INSERT into review VALUES (DEFAULT,'" + description + "'," + rating + "," + loggedInUserId + "," + gameId + ")";
-					s.executeQuery(query);
+					try {
+						s.executeQuery(query);
+					} catch (SQLException e1){
+						JOptionPane.showMessageDialog(frame, "You didn't enter a rating between 1 and 10. Please choose a rating between 1 and 10.");
+						return;
+					}
+					
 					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Your review has been saved");
 	
 				} catch (SQLException e1){
