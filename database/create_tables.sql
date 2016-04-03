@@ -97,6 +97,7 @@ CREATE TABLE owns
 gameId INTEGER NOT NULL,
 since DATE NOT NULL,
 rating INTEGER,
+CONSTRAINT check_owns_rating CHECK (rating BETWEEN 1 and 10),
 PRIMARY KEY (userId,gameId),
 FOREIGN KEY (userId) references users(userId) ON DELETE CASCADE,
 FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE);
@@ -148,6 +149,7 @@ CREATE TABLE rate
 ( rater_userId INTEGER NOT NULL,
 rated_userId INTEGER NOT NULL,
 rating INTEGER NOT NULL,
+CONSTRAINT check_rate_rating CHECK (rating BETWEEN 1 and 10),
 PRIMARY KEY (rater_userId,rated_userId),
 FOREIGN KEY (rater_userId) references users(userId) ON DELETE CASCADE,
 FOREIGN KEY (rated_userId) references users(userId) ON DELETE CASCADE);
