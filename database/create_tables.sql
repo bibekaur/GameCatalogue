@@ -339,34 +339,10 @@ insert into review
 values (DEFAULT, 'Fire Emblem: Conquest was a really great game! The strategy involved was excellent. Chapter 10 was brutal, but it was really satisfying to play!', 10, 1, 7);
 
 insert into review
-values (DEFAULT, 'it was alright', 5, 2, 6);
-
-insert into review
 values (DEFAULT, 'it was alright', 8, 3, 1);
-
-insert into review
-values (DEFAULT, 'it was alright', 6, 1, 2);
-
-insert into review
-values (DEFAULT, 'it was alright', 7, 2, 3);
-
-insert into review
-values (DEFAULT, 'it was alright', 5, 2, 4);
-
-insert into review
-values (DEFAULT, 'it was alright', 6, 1, 5);
-
-insert into review
-values (DEFAULT, 'it was alright', 5, 2, 1);
-
-insert into review
-values (DEFAULT, 'it was alright', 5, 1, 7);
 
 insert into review
 values (DEFAULT, 'it was alright', 8, 3, 4);
 
 insert into review
 values (DEFAULT, 'it was alright', 9, 3, 7);
-
-insert into review
-values (DEFAULT, 'it was alright', 6, 1, 4);
