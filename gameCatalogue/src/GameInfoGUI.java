@@ -145,9 +145,132 @@ public class GameInfoGUI extends JFrame{
 		});
 	}
 	
-//	private void addOwnButtonListener(JButton ownButton){
-//		ownButton.addActionListener(new);
-//	}
+	private void addOwnButtonListener(JButton ownButton){
+		ownButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//Only insert into own if they don't own it already
+				try{
+					Statement s = con.createStatement();
+					String query = "SELECT * from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						//already owns this game, don't insert
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You already own this game");
+						return;
+					}
+					else {
+						query = "INSERT into owns VALUES ("+ loggedInUserId + "," + gameId + ", CURRENT_TIMESTAMP, NULL)";
+						s.executeQuery(query);
+					}
+					
+				}catch (SQLException e1){
+					e1.printStackTrace();
+				}
+				
+				//Remove from wishlist 
+				try {
+					Statement s = con.createStatement();
+					String query = "SELECT * from wishes WHERE userId=" + loggedInUserId + " AND gameId=" + gameId;
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						rs.deleteRow();
+					}
+					
+				} catch (SQLException e1){
+					e1.printStackTrace();
+				}
+							
+				//Update label
+				ratingLabel.setText("Please rate this game");				
+			}
+			
+		});
+	}
+	
+	private void addWishlistButtonListener(JButton wishlistButton){
+		wishlistButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//Check if the user owns the game, don't add to wishlist if so (just return)
+				try{
+					Statement s = con.createStatement();
+					String query = "SELECT * from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						//already owns this game, don't insert
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You can't add a game you own to the wishlist");
+						return;
+					}
+					else {
+						//get the rank of the game
+						Integer rank;
+						try{
+							rank = Integer.parseInt((String) JOptionPane.showInputDialog((JFrame) SwingUtilities.getRoot(panel), "Where does this game rank in your wishlist (1-10)?"));
+							
+							if (rank > 10 || rank < 1){
+								JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
+								return;
+							}
+							
+						} catch (NumberFormatException e){
+							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter an integer between 1 and 10");
+							return;
+						}
+						
+						//check if a game with that rank already exists
+						//if the game exists, display which game it is and return
+						
+						query = "SELECT g.gameName"
+								+ " FROM wishes w INNER JOIN game g ON g.gameId = w.gameId "
+								+ "WHERE userId=" + loggedInUserId+ " AND rank=" + rank;
+						rs = s.executeQuery(query);
+						
+						if (rs.next()){
+							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You already ranked " + rs.getString("g.gameName") + " with " + rank);
+							return;
+						}
+						
+						//if rank is free then insert
+						query = "INSERT into wishes VALUES ("+ loggedInUserId + "," + gameId + "," + rank + ")";
+						s.executeQuery(query);
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), gameName + " has rank " + rank + " in your wishlist");
+					}
+					
+				}catch (SQLException e1){
+					e1.printStackTrace();
+				}
+				//
+			}
+			
+		});
+	}
+	
+	public void removeWishlistButtonListener(JButton removeButton){
+		removeButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//Check if the game is in the user's wishlist
+				try {
+					Statement s = con.createStatement();
+				} catch (SQLException e1){
+					e1.printStackTrace();
+				}
+				
+				//if not, just return and show pop up
+				
+				
+				//if so, remove it
+			}
+		});
+		
+	}
 	
 	public void setPanel(JFrame frame){
 		panel = new JPanel();
@@ -170,13 +293,21 @@ public class GameInfoGUI extends JFrame{
 		
 		//"I own this game" button that inserts, then updates the label
 		JButton ownButton = new JButton("I own this game");
-		//addOwnButtonListener(ownButton);
+		addOwnButtonListener(ownButton);
 		
 		
-		
-		//"Add this game to my wishlist" button, ONLY works if we don't own the game
+		//"Add this game to my wishlist" button (only add if user doesn't own it)
 		//Add a label that shows the rank of the game
+		JButton wishlistButton = new JButton("Add to my wishlist");
+		addWishlistButtonListener(wishlistButton);
 		
+		
+		//"Remove from wishlist" button (only remove if user has it in their wishlist)
+		JButton removeWishlistButton = new JButton("Remove from my wishlist");
+		removeWishlistButtonListener(removeWishlistButton);
+		
+		
+		panel.add(wishlistButton);
 		panel.add(ownButton);
 		panel.add(rate);
 		panel.add(rateText);
