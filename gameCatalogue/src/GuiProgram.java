@@ -56,15 +56,17 @@ public class GuiProgram extends JFrame{
 		//platformGUI.setPanel(frame);
 		//userGUI = new UserProfileGUI(con, 3);
 		//userGUI.setPanel(loggedInUserId, frame);
+		InputFormGUI form = new InputFormGUI(con);
+		form.setPanel(frame);
 		
 
-		mainPanel = new JPanel();
-		mainPanel.add(searchField);
-		mainPanel.add(searchOptions);
-		mainPanel.add(searchGameName);
-		frame.setContentPane(mainPanel);
-		frame.revalidate();
-		frame.repaint();
+//		mainPanel = new JPanel();
+//		mainPanel.add(searchField);
+//		mainPanel.add(searchOptions);
+//		mainPanel.add(searchGameName);
+//		frame.setContentPane(mainPanel);
+//		frame.revalidate();
+//		frame.repaint();
 	}
 	
 	//Splitting it into initializing what the buttons do
