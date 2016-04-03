@@ -26,7 +26,7 @@ public class DeveloperInfoGUI extends JFrame{
 		//get the user details
 		try{
 			Statement s = con.createStatement();
-			String query = "SELECT * FROM developer WHERE userId = '" + this.devId + "'";
+			String query = "SELECT * FROM developer WHERE dId = '" + this.devId + "'";
 			ResultSet rs = s.executeQuery(query);
 			
 			while (rs.next()){
@@ -65,15 +65,16 @@ public class DeveloperInfoGUI extends JFrame{
                     + " ORDER BY avg_rating)"
                     + " WHERE ROWNUM <= 10";
 			ResultSet rs = s.executeQuery(query);
+
 			while (rs.next()) {    
 				 String gameName = rs.getString(2); 
 				 String gameGenre = rs.getString(3);
 				 Integer gameId = rs.getInt(1);
 				 Integer rating = rs.getInt(4);
-				 top5games.add(new StoreData(gameId, gameName, gameGenre, rating, since, new JButton("Game: "+gameName+" : "+gameGenre),
+				 top5games.add(new StoreData(gameId, gameName, gameGenre, rating, founded, new JButton("Game: "+gameName+" : "+gameGenre),
 						                new JTextArea("Rated: "+rating.toString())));
 				 
-				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
+				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString());
 			} 
 		}
 		catch (SQLException e1){

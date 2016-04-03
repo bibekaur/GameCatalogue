@@ -381,6 +381,8 @@ public class GameInfoGUI extends JFrame{
 		
 		//TODO: platform button
 		
+		//TODO: get newest review
+		
 		panel.add(removeWishlistButton);
 		panel.add(wishlistButton);
 		panel.add(ownButton);
