@@ -108,6 +108,7 @@ description VARCHAR(3000) NOT NULL,
 rating INTEGER NOT NULL,
 userId INTEGER NOT NULL,
 gameId INTEGER NOT NULL,
+CONSTRAINT check_review_rating CHECK (rating between 1 and 10),
 PRIMARY KEY (rId, userId, gameId),
 FOREIGN KEY (userId, gameId) references owns(userId, gameId) ON DELETE CASCADE);
 
@@ -141,6 +142,7 @@ CREATE TABLE wishes
 ( userId INTEGER NOT NULL,
 gameId INTEGER NOT NULL,
 rank INTEGER NOT NULL,
+CONSTRAINT check_rank CHECK (rank between 1 and 10),
 PRIMARY KEY (userId, gameId),
 FOREIGN KEY (userId) references users(userId) ON DELETE CASCADE,
 FOREIGN KEY (gameId) references game(gameId) ON DELETE CASCADE);

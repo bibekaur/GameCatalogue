@@ -168,27 +168,21 @@ public class GameInfoGUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//Get the user rating input
-				Integer rating = -1;
+				Integer rating;
 				try {
 					rating = Integer.parseInt(rateText.getText());
-					if (rating > 10 || rating < 1){
-						rating = -1;
-						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
-					}
 										
 				} catch(NumberFormatException e){
-					rating = -1;
 					JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "Please enter a number between 1 and 10");
+					return;
 				}
 
-				if (rating != -1){
-					try{
-						Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-				                 ResultSet.CONCUR_UPDATABLE);
-						//TODO: apparnetly need to use check statement, also display what the rating is using a label
-						//Check if we've already rated this user
-						String query = "SELECT userId, rating from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
-						ResultSet rs = s.executeQuery(query);
+				try{
+					Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+				                ResultSet.CONCUR_UPDATABLE);
+					String query = "SELECT userId, rating from owns WHERE userId = " + loggedInUserId + "AND gameId = " + gameId;
+					ResultSet rs = s.executeQuery(query);
+					try {
 						if (rs.next()){
 							rs.updateInt("rating", rating);
 							rs.updateRow();
@@ -197,12 +191,15 @@ public class GameInfoGUI extends JFrame{
 						else {
 							JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You must own this game to rate it!");
 						}
+					} catch (SQLException e1){
+						JOptionPane.showMessageDialog((JFrame) SwingUtilities.getRoot(panel), "You didn't enter a number between 1 and 10. "
+								+ "Please enter a number between 1 and 10.");
+
+					}
 						
 						
-					}
-					catch (SQLException e1){
-						e1.printStackTrace();
-					}
+				} catch (SQLException e1){
+					e1.printStackTrace();
 				}
 			}
 										
