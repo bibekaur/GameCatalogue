@@ -15,6 +15,7 @@ public class GuiProgram extends JFrame{
 	
 	private UserProfileGUI userGUI;
 	private GameInfoGUI gameGUI;
+	private PlatformInfoGUI platformGUI;
 	private JPanel UserPanel;
 	private JPanel GamePanel;
 	private String loginName;
@@ -40,8 +41,10 @@ public class GuiProgram extends JFrame{
 		frame.remove(panel);
 		//gameGUI = new GameInfoGUI(1, 3, con);
 		//gameGUI.setPanel(frame);
-		userGUI = new UserProfileGUI(con, 3);
-		userGUI.setPanel(loggedInUserId, frame);
+		platformGUI = new PlatformInfoGUI(1, loggedInUserId, con);
+		platformGUI.setPanel(frame);
+		//userGUI = new UserProfileGUI(con, 3);
+		//userGUI.setPanel(loggedInUserId, frame);
 		//panel.add(searchField);
 		//panel.add(searchButton);
 
@@ -65,7 +68,7 @@ public class GuiProgram extends JFrame{
 						//Below line checks if it exists or not
 						ResultSet rs = s.executeQuery(query);
 						if (!rs.next() ) {    
-							 System.out.println("No username/password combo found"); 
+							JOptionPane.showMessageDialog(null, "This username and password combination could not be found.");
 						} 
 						else {
 							loggedInUserId = rs.getInt(1);
@@ -91,7 +94,7 @@ public class GuiProgram extends JFrame{
 						String query = "SELECT username FROM users WHERE username = '" + loginName + "'";
 						ResultSet rs = s.executeQuery(query);
 						if (rs.next()){
-							System.out.println("This username is already used");
+							JOptionPane.showMessageDialog(null, "This username is already used.");
 						}
 						else {
 							String insertionQuery = "INSERT INTO users VALUES(DEFAULT, '" + loginName + "', '" + loginPassword + "', CURRENT_TIMESTAMP, 0)";
