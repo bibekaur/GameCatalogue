@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class MainMenu extends JFrame{
     private Connection con;
@@ -19,6 +20,10 @@ public class MainMenu extends JFrame{
     private JTextField loginPasswordBox;
     private JPanel gamePanel;
     private boolean isLoggedIn;
+
+    /* Top 10 games */
+    private ArrayList<JButton> gamesButtons;
+    private ArrayList<JLabel> gamesLabels;
 
     public MainMenu() {
         setTitle("Game Catalogue");
@@ -68,6 +73,51 @@ public class MainMenu extends JFrame{
         });
     }
 
+    public void initTopGames() {
+        gamesButtons = new ArrayList<JButton>();
+        gamesLabels = new ArrayList<JLabel>();
+
+        try {
+            Statement s = con.createStatement();
+            String query = "SELECT gameId, gameName, gameGenre, avg_rating"
+                    + " FROM (SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating"
+                    + " FROM game g INNER JOIN review r ON g.gameId = r.gameId"
+                    + " GROUP BY g.gameId, g.gameName, g.gameGenre"
+                    + " ORDER BY avg_rating)"
+                    + " WHERE ROWNUM <= 10";
+
+            ResultSet rs = s.executeQuery(query);
+            while(rs.next()) {
+                Integer gameId = rs.getInt(1);
+                String gameName = rs.getString(2);
+                String gameGenre = rs.getString(3);
+                Integer rating = rs.getInt(4);
+                JLabel gameInfo = new JLabel(gameName + " " + gameGenre + " " + rating.toString());
+                gamesLabels.add(gameInfo);
+                gamesButtons.add(createButton(gameId));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for(int i = 0; i < gamesButtons.size(); i++) {
+            gamePanel.add(gamesLabels.get(i));
+            gamePanel.add(gamesButtons.get(i));
+        }
+    }
+
+    public JButton createButton(Integer gameId) {
+        JButton button = new JButton("Details");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("This is the gameId: " + gameId.toString());
+            }
+        });
+        return button;
+    }
+
     public void run() {
 
         try{
@@ -83,8 +133,6 @@ public class MainMenu extends JFrame{
         /* Main Menu */
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        gamePanel = new JPanel();
 
         toolbarPanel = new JPanel();
         toolbarPanel.setLayout(new FlowLayout());
@@ -103,8 +151,11 @@ public class MainMenu extends JFrame{
         loginPanel.add(loginPassword);
         loginPanel.add(loginPasswordBox);
 
+        gamePanel = new JPanel();
+
         drawMenu();
         init();
+        initTopGames();
 
     }
 
