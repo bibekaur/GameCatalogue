@@ -32,7 +32,7 @@ public class UserProfileGUI extends JFrame{
 			while (rs.next()){
 				username = rs.getString(2);
 				joinDate = rs.getString(4).toString();
-				isModerator = rs.getString(5).equals('1');
+				isModerator = rs.getString(5).equals("1");
 			}
 			
 			//s = con.createStatement();
@@ -86,7 +86,7 @@ public class UserProfileGUI extends JFrame{
 				 owns.add(new StoreData(gameId, gameName, gameGenre, rating, since, new JButton("Game: "+gameName+" : "+gameGenre),
 						                new JTextArea("Rated: "+rating.toString()+" On "+since)));
 				 
-				 System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
+				 //System.out.println(gameName +" "+ gameGenre +" "+ rating.toString() +" "+ since);
 				 //panel.add(owns.get(0).getButton());
 			} 
 		}
@@ -238,6 +238,98 @@ public class UserProfileGUI extends JFrame{
 											
 			});
 		}
+		
+		boolean loggerIsMod = false;
+		try{
+			Statement s = con.createStatement();
+			String query = "SELECT * FROM users WHERE userId = '" + loggedInUserId + "'";
+			ResultSet rs = s.executeQuery(query);
+			
+			while (rs.next()){
+				loggerIsMod = rs.getString(5).equals("1");
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		JButton mainPage = new JButton("Main Page");
+		final JTextArea isMod = new JTextArea("is a Moderator");
+		final JButton deleteUser = new JButton("Delete User");
+		final JButton upgrade = new JButton("Upgrade to Moderator");
+		
+		panel.add(mainPage);
+		layout.putConstraint(SpringLayout.WEST, mainPage, 200, SpringLayout.EAST, userInfo);
+		
+		layout.putConstraint(SpringLayout.WEST, isMod, 200, SpringLayout.EAST, userInfo);
+		layout.putConstraint(SpringLayout.NORTH, isMod, 0, SpringLayout.SOUTH, mainPage);
+
+		layout.putConstraint(SpringLayout.WEST, deleteUser, 200, SpringLayout.EAST, userInfo);
+		layout.putConstraint(SpringLayout.NORTH, deleteUser, 0, SpringLayout.SOUTH, mainPage);
+
+		layout.putConstraint(SpringLayout.WEST, upgrade, 200, SpringLayout.EAST, userInfo);
+		layout.putConstraint(SpringLayout.NORTH, upgrade, 0, SpringLayout.SOUTH, deleteUser);
+		
+		System.out.println("logger: "+loggerIsMod+" user: "+isModerator);
+		if (isModerator) {
+			panel.add(isMod);
+		} else if (loggerIsMod && !loggedInUserId.equals(userId)) {
+			panel.add(deleteUser);
+			panel.add(upgrade);
+		}
+		
+		mainPage.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				//TODO call main page function
+			}
+		});
+		
+		deleteUser.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				try {
+					Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+			                 ResultSet.CONCUR_UPDATABLE);
+					String query = "SELECT userId FROM users WHERE userId = '" + userId + "'";
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						rs.deleteRow();
+					}
+					
+				} catch (SQLException e1){
+					e1.printStackTrace();
+				}
+				//TODO: go back to main page
+			}
+		});
+		
+		upgrade.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				try {
+					Statement s = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+			                ResultSet.CONCUR_UPDATABLE);
+					String query = "SELECT userId, isModerator FROM users WHERE userId = '" + userId + "'";
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						rs.updateString("isModerator", "1");
+						rs.updateRow();
+					}
+				} catch (SQLException e1){
+					e1.printStackTrace();
+	
+				}
+				panel.remove(upgrade);
+				panel.remove(deleteUser);
+				panel.add(isMod);
+				
+				frame.setContentPane(panel);
+				frame.revalidate();
+				frame.repaint();
+			}
+		});
 		
 		frame.setContentPane(panel);
 		frame.revalidate();
