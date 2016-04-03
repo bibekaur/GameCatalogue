@@ -116,6 +116,17 @@ public class DeveloperInfoGUI extends JFrame{
 		});
         }
         
+
+		JButton mainPage = new JButton("Main Page");
+		panel.add(mainPage);
+		layout.putConstraint(SpringLayout.WEST, mainPage, 200, SpringLayout.EAST, devInfo);
+		mainPage.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				//TODO call main page function
+			}
+		});
+        
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();

@@ -637,6 +637,16 @@ public class GameInfoGUI extends JFrame{
 				
 		});
 		
+		JButton mainPage = new JButton("Main Page");
+		panel.add(mainPage);
+		//layout.putConstraint(SpringLayout.WEST, mainPage, 200, SpringLayout.EAST, userInfo);
+		mainPage.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				//TODO call main page function
+			}
+		});
+		
 		panel.add(platformButton);
 		panel.add(deleteReviewButton);
 		panel.add(reviewGameButton);

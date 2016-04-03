@@ -154,6 +154,16 @@ public class PlatformInfoGUI extends JFrame{
 		consoleInfo.setEditable(false);
 		consoleGameInfo.setEditable(false);
 
+		JButton mainPage = new JButton("Main Page");
+		panel.add(mainPage);
+		//layout.putConstraint(SpringLayout.WEST, mainPage, 200, SpringLayout.EAST, userInfo);
+		mainPage.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				//TODO call main page function
+			}
+		});
+		
 		panel.add(consoleInfo);
 		panel.add(consoleGameInfo);
 		frame.setContentPane(panel);
