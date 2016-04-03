@@ -8,22 +8,17 @@ import java.util.ArrayList;
 public class MainMenu extends JFrame{
     private Connection con;
 
+    private Integer loggedInUserId;
     private JFrame frame;
     private JPanel loginPanel;
     private JPanel mainPanel;
     private JPanel toolbarPanel;
     private JButton userProfileButton;
-    private JButton loginButton;
 
     private JButton searchButton;
     private JTextField searchField;
     private String[] options = {"Game", "Platform", "Developer"};
     private JComboBox<String> searchOptions;
-
-    /* Logging in box */
-    private JTextField loginNameBox;
-    private JTextField loginPasswordBox;
-    private boolean isLoggedIn;
 
     /* Top 10 games */
     private JPanel topGamePanel;
@@ -40,10 +35,10 @@ public class MainMenu extends JFrame{
     private ArrayList<JButton> topUsersButtons;
     private ArrayList<JLabel> topUsersLabels;
 
-    public MainMenu() {
+    public MainMenu(Integer userId) {
         setTitle("Game Catalogue");
         setSize(500,400);
-        isLoggedIn = false;
+        loggedInUserId = userId;
     }
 
     public void init() {
@@ -52,38 +47,6 @@ public class MainMenu extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("WOO\n");
-            }
-        });
-
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int result = JOptionPane.showConfirmDialog(null, loginPanel, "Login",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if(result == JOptionPane.OK_OPTION) {
-                    String loginName = loginNameBox.getText();
-                    String loginPassword = loginPasswordBox.getText();
-                    if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
-                        try {
-                            Statement s = con.createStatement();
-                            String query = "SELECT username, password FROM users WHERE username = '" + loginName
-                                         + "' AND password = '" + loginPassword + "'";
-                            ResultSet rs = s.executeQuery(query);
-                            if(!rs.next()) {
-                                JOptionPane.showMessageDialog(null, "Incorrect User/Password Combo",
-                                        "Incorrect User/Password Combo", JOptionPane.ERROR_MESSAGE);
-                            } else {
-                                isLoggedIn = true;
-                                drawMenu();
-                            }
-                        } catch(SQLException e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Incorrect User/Password Combo",
-                                "Incorrect User/Password Combo", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
             }
         });
 
@@ -142,13 +105,12 @@ public class MainMenu extends JFrame{
 
             ResultSet rs = s.executeQuery(query);
             while(rs.next()) {
-                Integer gameId = rs.getInt(1);
-                String gameName = rs.getString(2);
-                String gameGenre = rs.getString(3);
-                Integer rating = rs.getInt(4);
-                JLabel gameInfo = new JLabel(gameName + " " + gameGenre + " " + rating.toString());
-                topUsersLabels.add(gameInfo);
-                topUsersButtons.add(createButton(gameId));
+                Integer userId = rs.getInt(1);
+                String username = rs.getString(2);
+                Integer rating = rs.getInt(3);
+                JLabel userInfo = new JLabel(username + " " + rating.toString());
+                topUsersLabels.add(userInfo);
+                topUsersButtons.add(createButton(userId));
 
             }
         } catch (SQLException e) {
@@ -278,7 +240,7 @@ public class MainMenu extends JFrame{
             e.printStackTrace();
         }
 
-        frame = new MainMenu();
+        frame = this;
 
         /* Main Menu */
         mainPanel = new JPanel();
@@ -287,22 +249,9 @@ public class MainMenu extends JFrame{
         toolbarPanel = new JPanel();
         toolbarPanel.setLayout(new FlowLayout());
         userProfileButton = new JButton("My Profile");
-        loginButton = new JButton("Login");
         searchOptions = new JComboBox<String>(options);
         searchButton = new JButton("Search");
         searchField = new JTextField(30);
-
-        /* Login Panel */
-        loginPanel = new JPanel(new GridLayout(2,2));
-        loginNameBox = new JTextField(10);
-        loginPasswordBox = new JPasswordField(10);
-
-        final JLabel loginName = new JLabel("Login NAME: ");
-        final JLabel loginPassword = new JLabel("Login PASSWORD: ");
-        loginPanel.add(loginName);
-        loginPanel.add(loginNameBox);
-        loginPanel.add(loginPassword);
-        loginPanel.add(loginPasswordBox);
 
         topGamePanel = new JPanel();
         allGamePanel = new JPanel();
@@ -317,15 +266,9 @@ public class MainMenu extends JFrame{
     }
 
     public void drawMenu() {
-        frame.setContentPane(mainPanel);
-        frame.setVisible(true);
         mainPanel.removeAll();
         toolbarPanel.removeAll();
-        if(isLoggedIn) {
-            toolbarPanel.add(userProfileButton);
-        } else {
-            toolbarPanel.add(loginButton);
-        }
+        toolbarPanel.add(userProfileButton);
         toolbarPanel.add(searchOptions);
         toolbarPanel.add(searchField);
         toolbarPanel.add(searchButton);
@@ -341,7 +284,7 @@ public class MainMenu extends JFrame{
     }
 
     public static void main(String[] args) {
-        MainMenu m = new MainMenu();
+        MainMenu m = new MainMenu(1);
         m.run();
     }
 }
