@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 
 @SuppressWarnings("serial")
-public class DeveloperInfoGUI extends JFrame{
+public class DeveloperInfoGUI extends JFrame {
 	private Connection con;
 	private JPanel panel;
 	

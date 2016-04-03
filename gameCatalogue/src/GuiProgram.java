@@ -89,7 +89,9 @@ public class GuiProgram extends JFrame{
 						} 
 						else {
 							loggedInUserId = rs.getInt(1);
-							drawLoggedInScreen();	
+							//drawLoggedInScreen();
+							MainMenu m = new MainMenu(con, loggedInUserId);
+							m.drawMenu(frame);
 						}
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
@@ -222,17 +224,34 @@ public class GuiProgram extends JFrame{
 //	    String query = "SELECT gameName, gameGenre, avg_rating"
 //	    		+ "FROM (SELECT gameName, gameGenre, AVG(rating) AS avg_rating"
 //	    		+ "FROM game g INNER JOIN review r ON g.gameId = r.gameId"
-//	    		+ "GROUP BY g.gameId) "
-//	    		+ "ORDER BY avg_rating LIMIT 10";
-	    
-	    //Query to find the top 10 best rated users -- this needs some testing
-//	    String query = "SELECT username, avg_rating"
-//	    		+ "FROM (SELECT username, AVG(rating) AS avg_rating"
-//	    		+ "FROM users u INNER JOIN rate r ON u.userId = r.rated_userId"
-//	    		+ "GROUP BY u.username)"
-//	    		+ "ORDER BY avg_rating LIMIT 10";
-	    
-	    //Query to find games played by the top 10 reated users
+//	    		+ "GROUP BY g.gameId)"
+//	    		+ "WHERE avg_rating > " + 5;*/
+//
+//	    //Query to find the top 10 best games
+////	    String query = "SELECT gameName, gameGenre, avg_rating"
+////	    		+ "FROM (SELECT gameName, gameGenre, AVG(rating) AS avg_rating"
+////	    		+ "FROM game g INNER JOIN review r ON g.gameId = r.gameId"
+////	    		+ "GROUP BY g.gameId) "
+////	    		+ "ORDER BY avg_rating LIMIT 10";
+//
+//	    //Query to find the top 10 best rated users -- this needs some testing
+////	    String query = "SELECT username, avg_rating"
+////	    		+ "FROM (SELECT username, AVG(rating) AS avg_rating"
+////	    		+ "FROM users u INNER JOIN rate r ON u.userId = r.rated_userId"
+////	    		+ "GROUP BY u.username)"
+////	    		+ "ORDER BY avg_rating LIMIT 10";
+//
+//	    //Query to find games played by the top 10 reated users
+////	    String query = "SELECT gameName, gameGenre "
+////	    		+ "FROM game g INNER JOIN owns o ON g.gameId = o.gameId"
+////	    		+ "WHERE o.userId IN (SELECT userId"
+////	    		+ "FROM (SELECT username, userId, AVG(rating) AS avg_rating"
+////	    		+ "FROM users u INNER JOIN rate r ON u.userId = r.rated_userId"
+////	    		+ "GROUP BY u.username)"
+////	    		+ "ORDER BY avg_rating LIMIT 10)";
+//
+//	    //Select games that are owned by everybody
+//	    //This SHOULD be division.
 //	    String query = "SELECT gameName, gameGenre "
 //	    		+ "FROM game g INNER JOIN owns o ON g.gameId = o.gameId"
 //	    		+ "WHERE o.userId IN (SELECT userId"
