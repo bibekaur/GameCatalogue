@@ -35,6 +35,11 @@ public class MainMenu extends JFrame{
     private ArrayList<JButton> allGamesButtons;
     private ArrayList<JLabel> allGamesLabels;
 
+    /* Top 5 Users */
+    private JPanel topUserPanel;
+    private ArrayList<JButton> topUsersButtons;
+    private ArrayList<JLabel> topUsersLabels;
+
     public MainMenu() {
         setTitle("Game Catalogue");
         setSize(500,400);
@@ -122,6 +127,44 @@ public class MainMenu extends JFrame{
         });
     }
 
+    public void initTopUsers() {
+        topUsersButtons = new ArrayList<JButton>();
+        topUsersLabels = new ArrayList<JLabel>();
+
+        try {
+            Statement s = con.createStatement();
+            String query = "SELECT userId, username, avg_rating"
+                    + " FROM (SELECT userId, username, AVG(rating) AS avg_rating"
+                    + " FROM users u INNER JOIN rate r ON u.userId = r.rated_userId"
+                    + " GROUP BY u.userId, username"
+                    + " ORDER BY avg_rating)"
+                    + " WHERE ROWNUM <= 5";
+
+            ResultSet rs = s.executeQuery(query);
+            while(rs.next()) {
+                Integer gameId = rs.getInt(1);
+                String gameName = rs.getString(2);
+                String gameGenre = rs.getString(3);
+                Integer rating = rs.getInt(4);
+                JLabel gameInfo = new JLabel(gameName + " " + gameGenre + " " + rating.toString());
+                topUsersLabels.add(gameInfo);
+                topUsersButtons.add(createButton(gameId));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        topUserPanel.removeAll();
+        final JLabel topUsersLabel = new JLabel("Top 5 Users!");
+        topUserPanel.add(topUsersLabel);
+        for(int i = 0; i < topUsersButtons.size(); i++) {
+            topUserPanel.add(topUsersLabels.get(i));
+            topUserPanel.add(topUsersButtons.get(i));
+            //TODO: Add Layout-ing
+        }
+    }
+
     public void initTopGames() {
         topGamesButtons = new ArrayList<JButton>();
         topGamesLabels = new ArrayList<JLabel>();
@@ -166,7 +209,7 @@ public class MainMenu extends JFrame{
             }
             layout.putConstraint(SpringLayout.WEST, topGamesButtons.get(i), 2, SpringLayout.EAST, topGamesLabels.get(i));
         }
-        topGamePanel.setLayout(layout);
+        //topGamePanel.setLayout(layout);
     }
 
     public void initGamesByAll() {
@@ -194,6 +237,24 @@ public class MainMenu extends JFrame{
         } catch(SQLException e1) {
             e1.printStackTrace();
         }
+
+        allGamePanel.removeAll();
+        final JLabel allGamesLabel = new JLabel("Top 5 Games Played By Top 5 Users!");
+        SpringLayout layout = new SpringLayout();
+        allGamePanel.add(allGamesLabel);
+        for(int i = 0; i < allGamesButtons.size(); i++) {
+            allGamePanel.add(allGamesLabels.get(i));
+            allGamePanel.add(allGamesButtons.get(i));
+            if(i == 0) {
+                layout.putConstraint(SpringLayout.NORTH, allGamesLabels.get(i), 50, SpringLayout.SOUTH, allGamesLabel);
+                layout.putConstraint(SpringLayout.NORTH, allGamesButtons.get(i), 40, SpringLayout.SOUTH, allGamesLabel);
+            } else {
+                layout.putConstraint(SpringLayout.NORTH, allGamesLabels.get(i), 40, SpringLayout.SOUTH, allGamesLabels.get(i-1));
+                layout.putConstraint(SpringLayout.NORTH, allGamesButtons.get(i), 40, SpringLayout.SOUTH, allGamesButtons.get(i-1));
+            }
+            layout.putConstraint(SpringLayout.WEST, allGamesButtons.get(i), 2, SpringLayout.EAST, allGamesLabels.get(i));
+        }
+        //allGamePanel.setLayout(layout);
     }
 
     public JButton createButton(Integer gameId) {
@@ -245,15 +306,19 @@ public class MainMenu extends JFrame{
 
         topGamePanel = new JPanel();
         allGamePanel = new JPanel();
+        topUserPanel = new JPanel();
 
         init();
         initTopGames();
         initGamesByAll();
+        initTopUsers();
         drawMenu();
 
     }
 
     public void drawMenu() {
+        frame.setContentPane(mainPanel);
+        frame.setVisible(true);
         mainPanel.removeAll();
         toolbarPanel.removeAll();
         if(isLoggedIn) {
@@ -267,6 +332,8 @@ public class MainMenu extends JFrame{
 
         mainPanel.add(toolbarPanel);
         mainPanel.add(topGamePanel);
+        mainPanel.add(allGamePanel);
+        mainPanel.add(topUserPanel);
         frame.setContentPane(mainPanel);
         frame.setResizable(true);
         frame.setVisible(true);
