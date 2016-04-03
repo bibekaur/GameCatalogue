@@ -536,6 +536,16 @@ public class GameInfoGUI extends JFrame{
 		});
 	}
 	
+	private void addPlatformButtonListener(JButton platformButton){
+		platformButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//TODO: go to the platform GUI
+			}
+		});
+	}
+	
 	public void setPanel(JFrame frame){
 		this.frame = frame;
 		panel = new JPanel();
@@ -583,7 +593,9 @@ public class GameInfoGUI extends JFrame{
 		JButton deleteReviewButton = new JButton("Delete my review");
 		addDeleteReviewButtonListener(deleteReviewButton);
 		
-		//TODO: platform button
+		//Clicking on this button switches to the platform gui
+		JButton platformButton = new JButton("Platform: " + platformName);
+		addPlatformButtonListener(platformButton);
 		
 		//Radio buttons to toggle between top 5 and bottom 5 reviews
 		JRadioButton topFiveButton = new JRadioButton("5 Highest Reviews");
@@ -616,6 +628,7 @@ public class GameInfoGUI extends JFrame{
 				
 		});
 		
+		panel.add(platformButton);
 		panel.add(deleteReviewButton);
 		panel.add(reviewGameButton);
 		panel.add(topFiveButton);
