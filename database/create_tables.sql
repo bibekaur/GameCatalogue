@@ -233,15 +233,12 @@ insert into developed
 values (1, 1);
 
 insert into developed
-<<<<<<< HEAD
-=======
 values (1, 2);
 
 insert into developed
 values (1, 3);
 
 insert into developed
->>>>>>> integrate_platform
 values (2, 6);
 
 insert into developed
