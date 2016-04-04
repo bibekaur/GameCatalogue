@@ -303,12 +303,12 @@ public class InputFormGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JLabel nameLabel = new JLabel("Game Name (limit 100 chars)");
-				JLabel gameLabel = new JLabel("Game Genre (limit 100 chars)");
-				JLabel dateLabel = new JLabel("Release Date (YYYY-MM-DD)");
-				JLabel priceLabel = new JLabel("Price   $");
-				JLabel devLabel = new JLabel("Developer");
-				JLabel platformLabel = new JLabel("Platform");
+				JLabel nameLabel = new JLabel(" *Game Name (limit 100 chars)      ");
+				JLabel gameLabel = new JLabel(" *Game Genre (limit 100 chars)     ");
+				JLabel dateLabel = new JLabel("  Release Date (YYYY-MM-DD)");
+				JLabel priceLabel = new JLabel("  Price                              $");
+				JLabel devLabel = new JLabel(" *Developer                                  ");
+				JLabel platformLabel = new JLabel(" *Platform                                          ");
 				
 				removeComponents();	
 				updateDevelopers();
@@ -321,6 +321,8 @@ public class InputFormGUI extends JFrame{
 				gamePrice = new JTextField(20);
 				gameDeveloper = new JComboBox<>(developers.toArray(new String[0]));
 				gamePlatform = new JComboBox<>(platforms.toArray(new String[0]));
+				gameDeveloper.setSelectedIndex(0);
+				gamePlatform.setSelectedIndex(0);
 				
 				JButton addGame = new JButton("Add");
 				addGameButtonListener(addGame);
@@ -338,6 +340,31 @@ public class InputFormGUI extends JFrame{
 				visible.add(gameDate);
 				visible.add(gamePrice);
 				visible.add(addGame);
+				
+				
+				layout.putConstraint(SpringLayout.NORTH, nameLabel, 20, SpringLayout.SOUTH, game);
+				layout.putConstraint(SpringLayout.NORTH, gameName, 20, SpringLayout.SOUTH, game);
+				layout.putConstraint(SpringLayout.WEST, gameName, 20, SpringLayout.EAST, nameLabel);
+				layout.putConstraint(SpringLayout.NORTH, gameLabel, 20, SpringLayout.SOUTH, nameLabel);
+				layout.putConstraint(SpringLayout.NORTH, gameGenre, 20, SpringLayout.SOUTH, gameName);
+				layout.putConstraint(SpringLayout.WEST, gameGenre, 20, SpringLayout.EAST, gameLabel);
+				layout.putConstraint(SpringLayout.NORTH, devLabel, 20, SpringLayout.SOUTH, gameLabel);
+				layout.putConstraint(SpringLayout.NORTH, gameDeveloper, 20, SpringLayout.SOUTH, gameGenre);
+				layout.putConstraint(SpringLayout.WEST, gameDeveloper, 20, SpringLayout.EAST, devLabel);
+				layout.putConstraint(SpringLayout.NORTH, platformLabel, 20, SpringLayout.SOUTH, devLabel);
+				layout.putConstraint(SpringLayout.NORTH, gamePlatform, 20, SpringLayout.SOUTH, gameDeveloper);
+				layout.putConstraint(SpringLayout.WEST, gamePlatform, 20, SpringLayout.EAST, platformLabel);
+				layout.putConstraint(SpringLayout.NORTH, dateLabel, 40, SpringLayout.SOUTH, platformLabel);
+				layout.putConstraint(SpringLayout.NORTH, gameDate, 20, SpringLayout.SOUTH, gamePlatform);
+				layout.putConstraint(SpringLayout.WEST, gameDate, 20, SpringLayout.EAST, dateLabel);
+				layout.putConstraint(SpringLayout.NORTH, priceLabel, 40, SpringLayout.SOUTH, dateLabel);
+				layout.putConstraint(SpringLayout.NORTH, gamePrice, 20, SpringLayout.SOUTH, gameDate);
+				layout.putConstraint(SpringLayout.WEST, gamePrice, 20, SpringLayout.EAST, priceLabel);
+				layout.putConstraint(SpringLayout.NORTH, addGame, 20, SpringLayout.SOUTH, gamePrice);
+				layout.putConstraint(SpringLayout.WEST, addGame, 20, SpringLayout.EAST, priceLabel);
+				
+				
+				
 				panel.add(nameLabel);
 				panel.add(gameLabel);
 				panel.add(devLabel);
@@ -362,9 +389,9 @@ public class InputFormGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JLabel name = new JLabel("*Platform Name (limit 100 chars)");
-				JLabel cost = new JLabel ("Cost  $");
-				JLabel date = new JLabel ("Release Date (YYYY-MM-DD)");
+				JLabel name = new JLabel(" *Platform Name (limit 100 chars)");
+				JLabel cost = new JLabel(" Cost                                                  $");
+				JLabel date = new JLabel(" Release Date (YYYY-MM-DD)       ");
 				
 				removeComponents();
 				
@@ -385,6 +412,20 @@ public class InputFormGUI extends JFrame{
 				visible.add(platformCost);
 				visible.add(platformDate);
 				visible.add(addPlatform);
+				
+				layout.putConstraint(SpringLayout.NORTH, name, 20, SpringLayout.SOUTH, game);
+				layout.putConstraint(SpringLayout.NORTH, platformName, 20, SpringLayout.SOUTH, game);
+				layout.putConstraint(SpringLayout.WEST, platformName, 20, SpringLayout.EAST, name);
+				layout.putConstraint(SpringLayout.NORTH, cost, 20, SpringLayout.SOUTH, name);
+				layout.putConstraint(SpringLayout.NORTH, platformCost, 20, SpringLayout.SOUTH, name);
+				layout.putConstraint(SpringLayout.WEST, platformCost, 20, SpringLayout.EAST, cost);
+				layout.putConstraint(SpringLayout.NORTH, date, 20, SpringLayout.SOUTH, cost);
+				layout.putConstraint(SpringLayout.NORTH, platformDate, 20, SpringLayout.SOUTH, cost);
+				layout.putConstraint(SpringLayout.WEST, platformDate, 20, SpringLayout.EAST, date);
+				layout.putConstraint(SpringLayout.NORTH, addPlatform, 20, SpringLayout.SOUTH, platformDate);
+				layout.putConstraint(SpringLayout.WEST, addPlatform, 20, SpringLayout.EAST, date);
+				
+				
 				panel.add(name);
 				panel.add(cost);
 				panel.add(date);
@@ -404,7 +445,7 @@ public class InputFormGUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JLabel name = new JLabel(" *Developer Name \n(limit 100 chars)");
-				JLabel date = new JLabel(" Founded (YYYY-MM-DD)");
+				JLabel date = new JLabel(" Founded (YYYY-MM-DD)               ");
 				
 				removeComponents();
 				
