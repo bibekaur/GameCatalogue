@@ -100,8 +100,8 @@ public class LoginGUI extends JFrame {
         });
     }
     public void setPanel(JFrame frame) {
-        final JLabel loginName = new JLabel("Login NAME: ");
-        final JLabel loginPassword = new JLabel("Login PASSWORD: ");
+        final JLabel loginName = new JLabel("Username: ");
+        final JLabel loginPassword = new JLabel("Password: ");
         loginPanel.add(loginName);
         loginPanel.add(loginNameBox);
         loginPanel.add(loginPassword);
