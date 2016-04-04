@@ -19,6 +19,8 @@ public class GameInfoGUI extends JFrame{
 	private String gameName;
 	private String gameGenre;
 	private Integer averageRating;
+	private Float gamePrice;
+	private String gameDate;
 	
 	private boolean isOwned;
 	private boolean isWishlist;
@@ -32,7 +34,9 @@ public class GameInfoGUI extends JFrame{
 	private Integer devId;
 	
 	private JPanel panel;
+	private SpringLayout layout;
 	ArrayList<JTextArea> reviews = new ArrayList<JTextArea>();
+	private JButton wishlistButton;
 	
 	public GameInfoGUI (Integer gId, Integer userId, Connection sqlConnection){
 		loggedInUserId = userId;
@@ -50,6 +54,14 @@ public class GameInfoGUI extends JFrame{
 				gameGenre = rs.getString("gameGenre");
 			}
 			
+			query = "SELECT * from available WHERE gameId=" + gameId;
+			rs = s.executeQuery(query);
+			
+			if (rs.next()){
+				gamePrice = rs.getFloat("price");
+				gameDate = rs.getString("releaseDate");
+			}
+			
 		} catch (SQLException e1){
 			e1.printStackTrace();
 		}
@@ -60,7 +72,7 @@ public class GameInfoGUI extends JFrame{
 		getDeveloper();
 		getPlatform();
 		
-		//TODO: Check if the user is a moderator because they can delete the game
+
 		
 	}
 	
@@ -401,7 +413,28 @@ public class GameInfoGUI extends JFrame{
 				
 			}
 			
+			Integer count = 1;
 			for (JTextArea r : this.reviews){
+				
+				if (count == 4){
+					layout.putConstraint(SpringLayout.NORTH, r, 10, SpringLayout.SOUTH, this.reviews.get(0));
+				}
+				else if (count == 5){
+					layout.putConstraint(SpringLayout.NORTH, r, 10, SpringLayout.SOUTH, this.reviews.get(1));
+					layout.putConstraint(SpringLayout.WEST, r, 10, SpringLayout.EAST, this.reviews.get(3));
+
+					
+				}
+				else if (count == 1){
+					layout.putConstraint(SpringLayout.NORTH, r, 5, SpringLayout.SOUTH, wishlistButton);
+
+				} 
+				else {
+					layout.putConstraint(SpringLayout.NORTH, r, 5, SpringLayout.SOUTH, wishlistButton);
+					layout.putConstraint(SpringLayout.WEST, r, 10, SpringLayout.EAST, this.reviews.get(count-2));
+				}
+				
+				count++;
 				panel.add(r);
 			}
 			
@@ -425,7 +458,7 @@ public class GameInfoGUI extends JFrame{
 			}
 			
 			this.reviews = new ArrayList<JTextArea>();
-			
+
 			while (rs.next()){
 				String username = rs.getString("username");
 				String description = rs.getString("description");
@@ -434,8 +467,28 @@ public class GameInfoGUI extends JFrame{
 				this.reviews.add(new JTextArea(description + "\nUser: " + username + " Rating: " + rating));
 				
 			}
-			
+			Integer count = 1;
 			for (JTextArea r : this.reviews){
+				
+				if (count == 4){
+					layout.putConstraint(SpringLayout.NORTH, r, 10, SpringLayout.SOUTH, this.reviews.get(0));
+				}
+				else if (count == 5){
+					layout.putConstraint(SpringLayout.NORTH, r, 10, SpringLayout.SOUTH, this.reviews.get(1));
+					layout.putConstraint(SpringLayout.WEST, r, 10, SpringLayout.EAST, this.reviews.get(3));
+
+					
+				}
+				else if (count == 1){
+					layout.putConstraint(SpringLayout.NORTH, r, 5, SpringLayout.SOUTH, wishlistButton);
+
+				} 
+				else {
+					layout.putConstraint(SpringLayout.NORTH, r, 5, SpringLayout.SOUTH, wishlistButton);
+					layout.putConstraint(SpringLayout.WEST, r, 10, SpringLayout.EAST, this.reviews.get(count-2));
+				}
+				
+				count++;
 				panel.add(r);
 			}
 			
@@ -560,8 +613,12 @@ public class GameInfoGUI extends JFrame{
 		panel = new JPanel();
 		JTextArea gameInfo = new JTextArea("Name: " + gameName + "\n"
 				+ "Average rating: " + averageRating + "\n"
-				+ "Game genre: " + gameGenre + "\n");
-
+				+ "Game genre: " + gameGenre + "\n"
+				+ "Price: " + gamePrice + "\n"
+				+ "Release date: " + gameDate);
+		
+		layout = new SpringLayout();
+		panel.setLayout(layout);
 		
 		if (!isOwned){
 			ratingLabel = new JLabel("You must own this game to rate it");
@@ -582,7 +639,7 @@ public class GameInfoGUI extends JFrame{
 		
 		//"Add this game to my wishlist" button (only add if user doesn't own it)
 		//Add a label that shows the rank of the game
-		JButton wishlistButton = new JButton("Add to my wishlist");
+		wishlistButton = new JButton("Add to my wishlist");
 		addWishlistButtonListener(wishlistButton);
 		
 		
@@ -661,6 +718,29 @@ public class GameInfoGUI extends JFrame{
 		panel.add(rateText);
 		panel.add(gameInfo);
 		panel.add(ratingLabel);
+		
+		layout.putConstraint(SpringLayout.WEST, ownButton, 5, SpringLayout.EAST, gameInfo);
+		layout.putConstraint(SpringLayout.WEST, mainPage, 50, SpringLayout.EAST, ownButton);
+		layout.putConstraint(SpringLayout.WEST, developerButton, 5, SpringLayout.EAST, gameInfo);
+		layout.putConstraint(SpringLayout.NORTH, developerButton, 10, SpringLayout.SOUTH, ownButton);
+		layout.putConstraint(SpringLayout.WEST, platformButton, 5, SpringLayout.EAST, developerButton);
+		layout.putConstraint(SpringLayout.NORTH, platformButton, 10, SpringLayout.SOUTH, mainPage);
+		layout.putConstraint(SpringLayout.NORTH, rateText, 5, SpringLayout.SOUTH, developerButton);
+		layout.putConstraint(SpringLayout.WEST, rateText, 5, SpringLayout.EAST, gameInfo);
+		layout.putConstraint(SpringLayout.NORTH, rate, 5, SpringLayout.SOUTH, developerButton);
+		layout.putConstraint(SpringLayout.WEST, rate, 5, SpringLayout.EAST, rateText);
+		layout.putConstraint(SpringLayout.NORTH, reviewGameButton, 5, SpringLayout.SOUTH, ratingLabel);
+		layout.putConstraint(SpringLayout.NORTH, deleteReviewButton, 5, SpringLayout.SOUTH, ratingLabel);
+		layout.putConstraint(SpringLayout.WEST, deleteReviewButton, 5, SpringLayout.EAST, reviewGameButton);
+		layout.putConstraint(SpringLayout.WEST, ratingLabel, 5, SpringLayout.EAST, gameInfo);
+		layout.putConstraint(SpringLayout.NORTH, ratingLabel, 5, SpringLayout.SOUTH, rateText);
+		layout.putConstraint(SpringLayout.NORTH, wishlistButton, 5, SpringLayout.SOUTH, reviewGameButton);
+		layout.putConstraint(SpringLayout.NORTH, removeWishlistButton, 5, SpringLayout.SOUTH, reviewGameButton);
+		layout.putConstraint(SpringLayout.WEST, removeWishlistButton, 5, SpringLayout.EAST, wishlistButton);
+		layout.putConstraint(SpringLayout.NORTH, topFiveButton, 5, SpringLayout.SOUTH, ratingLabel);
+		layout.putConstraint(SpringLayout.NORTH, lowestFiveButton, 5, SpringLayout.SOUTH, topFiveButton);
+		layout.putConstraint(SpringLayout.WEST, topFiveButton, 5, SpringLayout.EAST, removeWishlistButton);
+		layout.putConstraint(SpringLayout.WEST, lowestFiveButton, 5, SpringLayout.EAST, removeWishlistButton);
 		frame.setContentPane(panel);
 		frame.revalidate();
 		frame.repaint();
