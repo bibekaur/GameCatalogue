@@ -30,13 +30,13 @@ public class mainMenu extends JFrame{
     /*Results from Search*/
     private JPanel resultsPanel;
 
-    /* Top 10 games */
+    /* Top 5 games */
     private JPanel topGamesPanel;
     private ArrayList<JButton> topGamesButtons;
     private ArrayList<JLabel> topGamesRatings;
     private ArrayList<JLabel> topGamesNames;
 
-    /* Bottom 10 games */
+    /* Bottom 5 games */
     private JPanel botGamesPanel;
     private ArrayList<JButton> botGamesButtons;
     private ArrayList<JLabel> botGamesRatings;
@@ -429,7 +429,7 @@ public class mainMenu extends JFrame{
             e.printStackTrace();
         }
 
-        final JLabel topGamesLabel = new JLabel("Top 5 Games!");
+        final JLabel topGamesLabel = new JLabel("Bottom 5 Games!");
         c.fill = GridBagConstraints.HORIZONTAL;
         //c.anchor = GridBagConstraints.CENTER;
         c.gridx = 1;
@@ -463,8 +463,8 @@ public class mainMenu extends JFrame{
 
     private void initRadio() {
         radioPanel = new JPanel();
-        topButton = new JRadioButton("Top 10");
-        botButton = new JRadioButton("Bottom 10");
+        topButton = new JRadioButton("Top 5");
+        botButton = new JRadioButton("Bottom 5");
         radioGroup = new ButtonGroup();
         topButton.setSelected(true);
 
