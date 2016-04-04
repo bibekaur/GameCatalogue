@@ -19,6 +19,13 @@ public class InputFormGUI extends JFrame{
 	private JTextField platformName;
 	private JTextField platformCost;
 	private JTextField platformDate;
+	private JTextField gameName;
+	private JTextField gameGenre;
+	private JTextField gameDate;
+	private JTextField gamePrice;
+	private JComboBox gameDeveloper;
+	private JComboBox gamePlatform;
+	
 	
 	ArrayList<Component> visible = new ArrayList<Component>();
 	ArrayList<String> developers = new ArrayList<String>();
@@ -36,6 +43,127 @@ public class InputFormGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				String gName = gameName.getText();
+				String gGenre = gameGenre.getText();
+				String gDate = gameDate.getText();
+				Float gPrice = (float) -1;
+				
+				//Name and genre are mandatory fields
+				
+				//TODO: mark mandatory fields with *
+				if (gName.isEmpty() || gName == null ){
+					JOptionPane.showMessageDialog(frame, "Please enter a game name");
+				} else if (gName.length() > 100){
+					JOptionPane.showMessageDialog(frame, "Game name is too long (max 100 chars)");
+				}
+				
+				if (gGenre.isEmpty() || gGenre == null){
+					JOptionPane.showMessageDialog(frame, "Please enter a game genre");
+				} else if (gGenre.length() > 100){
+					JOptionPane.showMessageDialog(frame, "Game genre is too long (max 100 chars)");
+				}
+				
+				if ((!gamePrice.getText().isEmpty()) && (gamePrice.getText() != null)){
+					try {
+						gPrice = Float.parseFloat(gamePrice.getText());
+						
+					} catch(NumberFormatException e){
+						JOptionPane.showMessageDialog(frame, "Price must be a number (can be a float)");
+						return;
+					}
+				}
+				
+				//Check if a game with this title exists
+				try {
+					
+					Statement s = con.createStatement();
+					String query = "SELECT * from game WHERE gameName ='" + gName + "'";
+					ResultSet rs = s.executeQuery(query);
+					
+					if (rs.next()){
+						JOptionPane.showMessageDialog(frame, "A game with this name already exists");
+						return;
+
+					}
+					
+					
+					
+				} catch (SQLException e1){
+					JOptionPane.showMessageDialog(frame, "There was an error");
+					e1.printStackTrace();
+					return;
+				}
+				
+				
+				
+				
+				//Get the developer, platform IDs
+				String dName = (String) gameDeveloper.getSelectedItem();
+				String pName = (String) gamePlatform.getSelectedItem();
+				Integer dId = dIds.get(developers.indexOf(dName));
+				Integer pId = pIds.get(platforms.indexOf(pName));
+				
+				
+				
+				try {
+					//Insert game into game table, then get it's gameId
+					Statement s = con.createStatement();
+					String query = "INSERT into game VALUES (DEFAULT,'" + gName + "','" + gGenre + "')";
+					s.executeQuery(query);
+					
+					
+				} catch (SQLException e1){
+					JOptionPane.showMessageDialog(frame, "There was an error");
+					e1.printStackTrace();
+					return;
+				}
+				
+				try {
+					Integer gameId;
+					Statement s = con.createStatement();
+					
+					//Get the new gameId
+					String query = "SELECT gameId from game WHERE gameName='" + gName + "'";
+					ResultSet rs = s.executeQuery(query);
+					
+					rs.next();
+					gameId = rs.getInt(1);
+					
+					
+					//Insert game/platform rel. into available
+					if (gPrice == (float) -1 && gDate.isEmpty()){
+						query = "INSERT into available VALUES (" + gameId + "," + pId + ", NULL, NULL)";
+					}
+					else if (gPrice == (float) -1){
+						query = "INSERT into available VALUES (" + gameId + "," + pId + ",NULL," + "to_date('" + gDate + "', 'YYYY-MM-DD'))";
+					}
+					else if (gDate.isEmpty()){
+						query = "INSERT into available VALUES (" + gameId + "," + pId + "," + gPrice + ", NULL)";
+					}
+					else {
+						query = "INSERT into available VALUES (" + gameId + "," + pId + "," + gPrice + "," + "to_date('" + gDate + "', 'YYYY-MM-DD'))";
+
+					}
+					System.out.println(query);
+					s.executeQuery(query);
+					
+					//Insert game/developer rel. into developed
+					query = "INSERT into developed VALUES(" + gameId + "," + dId + ")";
+					s.executeQuery(query);
+					
+				} catch (SQLException e1){
+					JOptionPane.showMessageDialog(frame, "Please enter a valid date with the format YYYY-MM-DD");
+					return;
+				}
+				
+				JOptionPane.showMessageDialog(frame, 
+						"Successfully added " + gName + " to games"
+						+ "\nGenre: " + gGenre
+						+ "\nPrice: " + gPrice
+						+ "\nDeveloper: " + dName
+						+ "\nPlatform: " + pName
+						+ "\nRelease date: " + gDate);
+
 				
 			}
 		});	
@@ -76,8 +204,16 @@ public class InputFormGUI extends JFrame{
 				
 				try {
 					Statement s = con.createStatement();
-					String query = "INSERT into platform VALUES (DEFAULT,'" + pName + "'," + cost + ","
-							+ "to_date('" + date + "', 'YYYY-MM-DD'))";
+					String query;
+					if (cost == (float) -1.0){
+						query = "INSERT into platform VALUES (DEFAULT,'" + pName + "', NULL,"
+								+ "to_date('" + date + "', 'YYYY-MM-DD'))";
+					}
+					else {
+						query = "INSERT into platform VALUES (DEFAULT,'" + pName + "'," + cost + ","
+								+ "to_date('" + date + "', 'YYYY-MM-DD'))";
+					}
+					
 					System.out.println(query);
 					ResultSet rs = s.executeQuery(query);
 					
@@ -161,7 +297,56 @@ public class InputFormGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
+				JLabel nameLabel = new JLabel("Game Name (limit 100 chars)");
+				JLabel gameLabel = new JLabel("Game Genre (limit 100 chars)");
+				JLabel dateLabel = new JLabel("Release Date (YYYY-MM-DD)");
+				JLabel priceLabel = new JLabel("Price   $");
+				JLabel devLabel = new JLabel("Developer");
+				JLabel platformLabel = new JLabel("Platform");
+				
+				removeComponents();	
+				updateDevelopers();
+				updatePlatforms();
+				
+				
+				gameName = new JTextField(20);
+				gameGenre = new JTextField(20);
+				gameDate = new JTextField(20);
+				gamePrice = new JTextField(20);
+				gameDeveloper = new JComboBox<>(developers.toArray(new String[0]));
+				gamePlatform = new JComboBox<>(platforms.toArray(new String[0]));
+				
+				JButton addGame = new JButton("Add");
+				addGameButtonListener(addGame);
+				
+				visible.add(nameLabel);
+				visible.add(gameLabel);
+				visible.add(devLabel);
+				visible.add(platformLabel);
+				visible.add(dateLabel);
+				visible.add(priceLabel);
+				visible.add(gameName);
+				visible.add(gameGenre);
+				visible.add(gameDeveloper);
+				visible.add(gamePlatform);
+				visible.add(gameDate);
+				visible.add(gamePrice);
+				visible.add(addGame);
+				panel.add(nameLabel);
+				panel.add(gameLabel);
+				panel.add(devLabel);
+				panel.add(platformLabel);
+				panel.add(dateLabel);
+				panel.add(priceLabel);
+				panel.add(gameName);
+				panel.add(gameGenre);
+				panel.add(gameDeveloper);
+				panel.add(gamePlatform);
+				panel.add(gameDate);
+				panel.add(gamePrice);
+				panel.add(addGame);
+				frame.revalidate();
+				frame.repaint();
 			}
 		});
 	}
@@ -258,6 +443,8 @@ public class InputFormGUI extends JFrame{
 			String query = "SELECT dName,dId from developer";
 			ResultSet rs = s.executeQuery(query);
 			
+			this.developers = new ArrayList<String>();
+			
 			while (rs.next()){
 				this.developers.add(rs.getString(1));
 				this.dIds.add(rs.getInt(2));
@@ -275,6 +462,8 @@ public class InputFormGUI extends JFrame{
 			Statement s = con.createStatement();
 			String query = "SELECT pName, pId from platform";
 			ResultSet rs = s.executeQuery(query);
+			
+			this.platforms = new ArrayList<String>();
 			
 			while (rs.next()){
 				this.platforms.add(rs.getString(1));
@@ -300,7 +489,7 @@ public class InputFormGUI extends JFrame{
 		options.add(developer);
 		
 		//Add action listeners to each button, each displays the appropriate form
-		//drawGameFormListener(game);
+		drawGameFormListener(game);
 		drawPlatformFormListener(platform);
 		drawDeveloperFormListener(developer);
 		
