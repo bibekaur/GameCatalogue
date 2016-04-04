@@ -328,8 +328,8 @@ public class mainMenu extends JFrame{
                     + " FROM (SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating"
                     + " FROM game g INNER JOIN review r ON g.gameId = r.gameId"
                     + " GROUP BY g.gameId, g.gameName, g.gameGenre"
-                    + " ORDER BY avg_rating)"
-                    + " WHERE ROWNUM <= 10";
+                    + " ORDER BY avg_rating DESC)"
+                    + " WHERE ROWNUM <= 5";
 
             ResultSet rs = s.executeQuery(query);
             while(rs.next()) {
@@ -347,7 +347,7 @@ public class mainMenu extends JFrame{
             e.printStackTrace();
         }
 
-        final JLabel topGamesLabel = new JLabel("Top 10 Games!");
+        final JLabel topGamesLabel = new JLabel("Top 5 Games!");
         c.fill = GridBagConstraints.HORIZONTAL;
         //c.anchor = GridBagConstraints.CENTER;
         c.gridx = 1;
