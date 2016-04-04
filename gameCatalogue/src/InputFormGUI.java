@@ -13,6 +13,12 @@ public class InputFormGUI extends JFrame{
 	private JPanel panel;
 	private JFrame frame;
 	private Connection con;
+	private SpringLayout layout;
+	
+	JRadioButton game;
+	JRadioButton platform;
+	JRadioButton developer;
+	ButtonGroup options;
 	
 	private JTextField developerName;
 	private JTextField developerFoundedDate;
@@ -397,8 +403,8 @@ public class InputFormGUI extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JLabel name = new JLabel("*Developer Name (limit 100 chars)");
-				JLabel date = new JLabel("Founded (YYYY-MM-DD)");
+				JLabel name = new JLabel(" *Developer Name \n(limit 100 chars)");
+				JLabel date = new JLabel(" Founded (YYYY-MM-DD)");
 				
 				removeComponents();
 				
@@ -420,6 +426,16 @@ public class InputFormGUI extends JFrame{
 				visible.add(developerName);
 				visible.add(developerFoundedDate);
 				visible.add(addDeveloper);
+				
+				layout.putConstraint(SpringLayout.NORTH, name, 20, SpringLayout.SOUTH, game);
+				layout.putConstraint(SpringLayout.NORTH, developerName, 20, SpringLayout.SOUTH, game);
+				layout.putConstraint(SpringLayout.WEST, developerName, 20, SpringLayout.EAST, name);
+				layout.putConstraint(SpringLayout.NORTH, date, 20, SpringLayout.SOUTH, name);
+				layout.putConstraint(SpringLayout.NORTH, developerFoundedDate, 20, SpringLayout.SOUTH, name);
+				layout.putConstraint(SpringLayout.WEST, developerFoundedDate, 20, SpringLayout.EAST, date);
+				layout.putConstraint(SpringLayout.NORTH, addDeveloper, 20, SpringLayout.SOUTH, developerFoundedDate);
+				layout.putConstraint(SpringLayout.WEST, addDeveloper, 20, SpringLayout.EAST, date);
+				
 				panel.add(name);
 				panel.add(date);
 				panel.add(developerName);
@@ -478,15 +494,21 @@ public class InputFormGUI extends JFrame{
 	public void setPanel (JFrame frame){
 		this.frame = frame;
 		this.panel = new JPanel();
+		this.layout = new SpringLayout();
+		this.panel.setLayout(layout);
 		
 		//Need three radio buttons: Game, Platform, Developer
-		JRadioButton game = new JRadioButton("Game");
-		JRadioButton platform = new JRadioButton("Platform");
-		JRadioButton developer = new JRadioButton("Developer");
-		ButtonGroup options = new ButtonGroup();
+		game = new JRadioButton("Game");
+		platform = new JRadioButton("Platform");
+		developer = new JRadioButton("Developer");
+		options = new ButtonGroup();
 		options.add(game);
 		options.add(platform);
 		options.add(developer);
+		
+		layout.putConstraint(SpringLayout.WEST, platform, 60, SpringLayout.EAST, game);
+		layout.putConstraint(SpringLayout.WEST, developer, 60, SpringLayout.EAST, platform);
+
 		
 		//Add action listeners to each button, each displays the appropriate form
 		drawGameFormListener(game);
