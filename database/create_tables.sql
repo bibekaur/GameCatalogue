@@ -7,7 +7,6 @@ drop table owns;
 drop table developer;
 drop table platform;
 drop table game;
-drop table suspension;
 drop table users;
 drop sequence seq_users;
 drop sequence seq_developer;
@@ -33,16 +32,6 @@ BEGIN
 END;
 /
 
-CREATE TABLE suspension 
-( fromDate DATE NOT NULL,
-fromTime TIMESTAMP NOT NULL,
-toDate DATE NOT NULL,
-toTime TIMESTAMP NOT NULL,
-regular_userId INTEGER NOT NULL,
-moderator_userId INTEGER NOT NULL,
-PRIMARY KEY (fromDate, fromTime, toDate, toTime, regular_userId, moderator_userId),
-FOREIGN KEY (regular_userId) REFERENCES users(userId) ON DELETE CASCADE,
-FOREIGN KEY (moderator_userId) REFERENCES users(userId) );
 
 CREATE TABLE game
 ( gameId INTEGER NOT NULL PRIMARY KEY,
@@ -298,8 +287,6 @@ values (9, 4, 39.99, '2014-11-21');
 insert into available
 values (10, 4, 39.99, '2014-11-21');
 
-insert into wishes
-values (1, 5, 1);
 
 insert into wishes
 values (1, 1, 2);
@@ -317,10 +304,22 @@ insert into owns
 values (1, 9, CURRENT_TIMESTAMP, 8);
 
 insert into owns
+values (1, 4, CURRENT_TIMESTAMP, 1);
+
+insert into owns
+values (1, 5, CURRENT_TIMESTAMP, 2);
+
+insert into owns
+values (1, 6, CURRENT_TIMESTAMP, 3);
+
+insert into owns
 values (2, 7, CURRENT_TIMESTAMP, 10);
 
 insert into owns
 values (2, 10, CURRENT_TIMESTAMP, 9);
+
+insert into owns
+values (2, 3, CURRENT_TIMESTAMP, 1);
 
 insert into owns
 values (3, 1, CURRENT_TIMESTAMP, 5);
@@ -337,6 +336,7 @@ values (3, 6, CURRENT_TIMESTAMP, 1);
 insert into owns
 values (3, 7, CURRENT_TIMESTAMP, 10);
 
+
 insert into review
 values (DEFAULT, 'Fire Emblem: Conquest was a really great game! The strategy involved was excellent. Chapter 10 was brutal, but it was really satisfying to play!', 10, 1, 7);
 
@@ -348,3 +348,18 @@ values (DEFAULT, 'it was alright', 8, 3, 4);
 
 insert into review
 values (DEFAULT, 'it was alright', 9, 3, 7);
+
+insert into review
+values (DEFAULT, 'pretty bad', 3, 1, 6);
+
+insert into review
+values (DEFAULT, 'a step above trash', 2, 1, 5);
+
+insert into review
+values (DEFAULT, 'I really love this game', 10, 2, 10);
+
+insert into review
+values (DEFAULT, 'I really love this game', 10, 2, 3);
+
+insert into review
+values (DEFAULT, 'Kept me engaged for only a weekend', 4, 3, 1);
