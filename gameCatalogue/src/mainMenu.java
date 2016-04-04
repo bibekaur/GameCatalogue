@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -34,6 +36,18 @@ public class mainMenu extends JFrame{
     private ArrayList<JLabel> topGamesRatings;
     private ArrayList<JLabel> topGamesNames;
 
+    /* Bottom 10 games */
+    private JPanel botGamesPanel;
+    private ArrayList<JButton> botGamesButtons;
+    private ArrayList<JLabel> botGamesRatings;
+    private ArrayList<JLabel> botGamesNames;
+
+    /* Radio button group to toggle */
+    private JPanel radioPanel;
+    private ButtonGroup radioGroup;
+    private JRadioButton topButton;
+    private JRadioButton botButton;
+
     /* Top Games Played by All Users */
     private JPanel allGamesPanel;
     private ArrayList<JButton> allGamesButtons;
@@ -57,6 +71,8 @@ public class mainMenu extends JFrame{
         initTopUsers();
         initGamesByAll();
         initTopGames();
+        initBotGames();
+        initRadio();
     }
 
     public void initToolbar() {
@@ -379,6 +395,106 @@ public class mainMenu extends JFrame{
         }
     }
 
+    private void initBotGames() {
+        botGamesPanel = new JPanel();
+        botGamesButtons = new ArrayList<JButton>();
+        botGamesNames = new ArrayList<JLabel>();
+        botGamesRatings = new ArrayList<JLabel>();
+        GridBagLayout layout = new GridBagLayout();
+        botGamesPanel.setLayout(layout);
+        GridBagConstraints c = new GridBagConstraints();
+
+        try {
+            Statement s = con.createStatement();
+            String query = "SELECT gameId, gameName, gameGenre, avg_rating"
+                    + " FROM (SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating"
+                    + " FROM game g INNER JOIN review r ON g.gameId = r.gameId"
+                    + " GROUP BY g.gameId, g.gameName, g.gameGenre"
+                    + " ORDER BY avg_rating ASC)"
+                    + " WHERE ROWNUM <= 5";
+
+            ResultSet rs = s.executeQuery(query);
+            while(rs.next()) {
+                Integer gameId = rs.getInt(1);
+                String gameName = rs.getString(2);
+                Integer rating = rs.getInt(4);
+                JLabel labelName = new JLabel(gameName, SwingConstants.CENTER);
+                JLabel labelRating = new JLabel(rating.toString() + "/10", SwingConstants.CENTER);
+                botGamesNames.add(labelName);
+                botGamesRatings.add(labelRating);
+                botGamesButtons.add(createButtonToGames(gameId));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        final JLabel topGamesLabel = new JLabel("Top 5 Games!");
+        c.fill = GridBagConstraints.HORIZONTAL;
+        //c.anchor = GridBagConstraints.CENTER;
+        c.gridx = 1;
+        c.gridy = 0;
+        botGamesPanel.add(topGamesLabel, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        botGamesPanel.add(new JLabel("Games", SwingConstants.CENTER), c);
+
+        c.gridx = 1;
+        c.gridy = 1;
+        botGamesPanel.add(new JLabel("Rating", SwingConstants.CENTER), c);
+
+        c.gridx = 2;
+        c.gridy = 1;
+        botGamesPanel.add(new JLabel(" "), c);
+
+        for(int i = 0; i < botGamesButtons.size(); i++) {
+            c.gridx = 0;
+            c.gridy = 3+i;
+            botGamesPanel.add(botGamesNames.get(i), c);
+
+            c.gridx = 1;
+            botGamesPanel.add(botGamesRatings.get(i), c);
+
+            c.gridx = 2;
+            botGamesPanel.add(botGamesButtons.get(i), c);
+        }
+    }
+
+    private void initRadio() {
+        radioPanel = new JPanel();
+        topButton = new JRadioButton("Top 10");
+        botButton = new JRadioButton("Bottom 10");
+        radioGroup = new ButtonGroup();
+        topButton.setSelected(true);
+
+        topButton.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    topButton.setSelected(true);
+                    botButton.setSelected(false);
+                    drawMenu(frame);
+                }
+            }
+        });
+
+        botButton.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    botButton.setSelected(true);
+                    topButton.setSelected(false);
+                    drawMenu(frame);
+                }
+            }
+        });
+        radioGroup.add(topButton);
+        radioGroup.add(botButton);
+        radioPanel.add(topButton);
+        radioPanel.add(botButton);
+    }
+
     private void initGamesByAll() {
         allGamesPanel = new JPanel();
         allGamesButtons = new ArrayList<JButton>();
@@ -500,23 +616,43 @@ public class mainMenu extends JFrame{
     }
 
     public void drawMenu(JFrame frame) {
-        this.frame = frame;
+        if(this.frame == null) {
+            this.frame = frame;
+        }
+        if(mainPanel.getComponents() != null) {
+            mainPanel.removeAll();
+        }
         mainPanel.add(toolbarPanel);
         mainPanel.add(searchPanel);
         mainPanel.add(resultsPanel);
-        mainPanel.add(topGamesPanel);
+        if(topButton.isSelected()) {
+            mainPanel.add(topGamesPanel);
+        } else {
+            mainPanel.add(botGamesPanel);
+        }
         mainPanel.add(allGamesPanel);
         mainPanel.add(topUsersPanel);
+        mainPanel.add(radioPanel);
 
         SpringLayout layout = new SpringLayout();
         layout.putConstraint(SpringLayout.NORTH, searchPanel, 0, SpringLayout.SOUTH, toolbarPanel);
         layout.putConstraint(SpringLayout.NORTH, resultsPanel, 0, SpringLayout.SOUTH, searchPanel);
         layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, resultsPanel, 0, SpringLayout.HORIZONTAL_CENTER, searchPanel);
         layout.putConstraint(SpringLayout.NORTH, topUsersPanel, 10, SpringLayout.SOUTH, resultsPanel);
-        layout.putConstraint(SpringLayout.NORTH, topGamesPanel, 10, SpringLayout.SOUTH, resultsPanel);
         layout.putConstraint(SpringLayout.NORTH, allGamesPanel, 20, SpringLayout.SOUTH, topUsersPanel);
-        layout.putConstraint(SpringLayout.WEST, topGamesPanel, 10, SpringLayout.EAST, topUsersPanel);
-        layout.putConstraint(SpringLayout.WEST, topGamesPanel, 10, SpringLayout.EAST, allGamesPanel);
+        if(topButton.isSelected()) {
+            layout.putConstraint(SpringLayout.NORTH, topGamesPanel, 10, SpringLayout.SOUTH, resultsPanel);
+            layout.putConstraint(SpringLayout.NORTH, radioPanel, 10, SpringLayout.SOUTH, topGamesPanel);
+            layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, radioPanel, 0, SpringLayout.HORIZONTAL_CENTER, topGamesPanel);
+            layout.putConstraint(SpringLayout.WEST, topGamesPanel, 10, SpringLayout.EAST, topUsersPanel);
+            layout.putConstraint(SpringLayout.WEST, topGamesPanel, 10, SpringLayout.EAST, allGamesPanel);
+        } else {
+            layout.putConstraint(SpringLayout.NORTH, botGamesPanel, 10, SpringLayout.SOUTH, resultsPanel);
+            layout.putConstraint(SpringLayout.NORTH, radioPanel, 10, SpringLayout.SOUTH, botGamesPanel);
+            layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, radioPanel, 0, SpringLayout.HORIZONTAL_CENTER, botGamesPanel);
+            layout.putConstraint(SpringLayout.WEST, botGamesPanel, 10, SpringLayout.EAST, topUsersPanel);
+            layout.putConstraint(SpringLayout.WEST, botGamesPanel, 10, SpringLayout.EAST, allGamesPanel);
+        }
         mainPanel.setLayout(layout);
 
         frame.setContentPane(mainPanel);
