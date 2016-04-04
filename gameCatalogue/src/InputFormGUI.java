@@ -14,6 +14,7 @@ public class InputFormGUI extends JFrame{
 	private JFrame frame;
 	private Connection con;
 	private SpringLayout layout;
+	private Integer userId;
 	
 	JRadioButton game;
 	JRadioButton platform;
@@ -39,8 +40,9 @@ public class InputFormGUI extends JFrame{
 	ArrayList<Integer> dIds = new ArrayList<Integer>();
 	ArrayList<Integer> pIds = new ArrayList<Integer>();
 
-	public InputFormGUI (Connection con){
+	public InputFormGUI (Connection con, Integer userId){
 		this.con = con;
+		this.userId = userId;
 		
 	}
 	
@@ -547,16 +549,26 @@ public class InputFormGUI extends JFrame{
 		options.add(platform);
 		options.add(developer);
 		
+		JButton mainPage = new JButton("Main Page");
+		
+		mainPage.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				mainMenu m = new mainMenu(con, userId);
+				m.drawMenu(frame);
+			}
+		});
+		
 		layout.putConstraint(SpringLayout.WEST, platform, 60, SpringLayout.EAST, game);
 		layout.putConstraint(SpringLayout.WEST, developer, 60, SpringLayout.EAST, platform);
-
+		layout.putConstraint(SpringLayout.WEST, mainPage, 40, SpringLayout.EAST, developer);
 		
 		//Add action listeners to each button, each displays the appropriate form
 		drawGameFormListener(game);
 		drawPlatformFormListener(platform);
 		drawDeveloperFormListener(developer);
 		
-		
+		this.panel.add(mainPage);
 		this.panel.add(game);
 		this.panel.add(platform);
 		this.panel.add(developer);
