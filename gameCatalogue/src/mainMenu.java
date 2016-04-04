@@ -86,8 +86,13 @@ public class mainMenu extends JFrame{
 
     public void initSearch() {
 
-        searchPanel = new JPanel();
         resultsPanel = new JPanel();
+        GridBagLayout resultsLayout = new GridBagLayout();
+        resultsPanel.setLayout(resultsLayout);
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+
+        searchPanel = new JPanel();
         searchPanel.setLayout(new FlowLayout());
         searchOptions = new JComboBox<String>(options);
         searchButton = new JButton("Search");
@@ -97,11 +102,13 @@ public class mainMenu extends JFrame{
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
+
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String search = searchField.getText();
                 String option = (String) searchOptions.getSelectedItem();
+
                 try {
                     if(!search.isEmpty()) {
                         Statement s = con.createStatement();
@@ -133,62 +140,66 @@ public class mainMenu extends JFrame{
                         if (!rs.isBeforeFirst()){
                             System.out.println("Could not find a game matching this query");}
                         else {
-                    		if (resultsPanel.getComponents() != null){
-                    			resultsPanel.removeAll();
-                    		}
-                        	try{
-                    			int columnCount = rs.getMetaData().getColumnCount();
-                    			
-                    			while(rs.next()){				
-                    				String s1 = "";
-                    				
-                    				for (int i = 2; i <= columnCount; i++){
-                    					if (i != columnCount){
-                    						s1 += rs.getString(i) + " - ";
-                    					}
-                    					else {
-                    						s1+= rs.getString(i);
-                    					}
-                    				}
-                    				s1+="\n";
-                    				JLabel temp = new JLabel(s1);
-                    				JButton tempbutt = new JButton("Info");
-                    				tempbutt.putClientProperty("id", Integer.valueOf(rs.getInt("id")));
-                    				tempbutt.addActionListener(new ActionListener() {
-                    		            @Override
-                    		            public void actionPerformed(ActionEvent e) {
-                    		            	int id = (Integer) ((JButton)e.getSource()).getClientProperty("id");
-                    		            	if (option.contentEquals("Game")){
-                    		            		GameInfoGUI GameGui;
-												GameGui = new GameInfoGUI(id, loggedInUserId, con);
-												GameGui.setPanel(frame);
-                    		     
-                    		            	}else if (option.contentEquals("Platform")){
-                    		            		PlatformInfoGUI PlatformGui;
-												PlatformGui = new PlatformInfoGUI(id, loggedInUserId, con);
-												PlatformGui.setPanel(frame);
-                    		            	}else if (option.contentEquals("Developer")){
-                    		            		DeveloperInfoGUI DeveloperGui;
-												DeveloperGui = new DeveloperInfoGUI(con, id);
-												DeveloperGui.setPanel(loggedInUserId, frame);
-  		            		
-                    		            	}else{
-                    		            		UserProfileGUI UserGui;
-                    		            		UserGui = new UserProfileGUI(con, id);
-                    		            		UserGui.setPanel(loggedInUserId, frame);     
-                    		            	}
-                    		            }
-                    		        });
-                    				
-                    				resultsPanel.add(temp);
-                    				resultsPanel.add(tempbutt);
-                    				
-                    			}
-                    			frame.revalidate();
-                    			frame.repaint();
-                    		}catch (SQLException e1){
-                    			e1.printStackTrace();
-                    		}
+                            if (resultsPanel.getComponents() != null){
+                                resultsPanel.removeAll();
+                            }
+                            try{
+                                int index = 0;
+
+                                c.gridx = 0;
+                                c.gridy = 0;
+                                JLabel resultsColNameLabel = new JLabel("Name", SwingConstants.CENTER);
+                                resultsPanel.add(resultsColNameLabel, c);
+
+                                if(option.contentEquals("Game")) {
+                                    JLabel resultsColPlatLabel = new JLabel("Platform", SwingConstants.CENTER);
+                                    c.gridx = 1;
+                                    resultsPanel.add(resultsColPlatLabel, c);
+                                }
+                                while(rs.next() && index < 10){
+                                    Integer id = rs.getInt(1);
+                                    String name = rs.getString(2);
+                                    JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
+                                    JButton resultButton;
+                                    JLabel platLabel = null;
+                                    if(option.contentEquals("Game")) {
+                                        resultButton = createButtonToGames(id);
+                                        String platName = rs.getString(4);
+                                        platLabel = new JLabel(platName, SwingConstants.CENTER);
+                                    } else if(option.contentEquals("Platform")) {
+                                        resultButton = createButtonToPlatforms(id);
+                                    } else if(option.contentEquals("Developers")) {
+                                        resultButton = createButtonToDevelopers(id);
+                                    } else {
+                                        resultButton = createButtonToUsers(id);
+                                    }
+
+                                    if(option.contentEquals("Game")) {
+                                        c.gridx = 0;
+                                        c.gridy = 1+index;
+                                        resultsPanel.add(nameLabel, c);
+
+                                        c.gridx = 1;
+                                        resultsPanel.add(platLabel, c);
+
+                                        c.gridx = 2;
+                                        resultsPanel.add(resultButton, c);
+                                    } else {
+                                        c.gridx = 0;
+                                        c.gridy = 1 + index;
+                                        resultsPanel.add(nameLabel, c);
+
+                                        c.gridx = 1;
+                                        resultsPanel.add(resultButton, c);
+                                    }
+
+                                    index++;
+                                }
+                                frame.revalidate();
+                                frame.repaint();
+                            }catch (SQLException e1){
+                                e1.printStackTrace();
+                            }
                         }
                     }
                 } catch(SQLException e1) {
@@ -198,7 +209,7 @@ public class mainMenu extends JFrame{
         });
     }
 
-    public void initTopUsers() {
+    private void initTopUsers() {
         topUsersPanel = new JPanel();
         topUsersButtons = new ArrayList<JButton>();
         topUsersNames = new ArrayList<JLabel>();
@@ -262,11 +273,10 @@ public class mainMenu extends JFrame{
 
             c.gridx = 2;
             topUsersPanel.add(topUsersButtons.get(i));
-            //TODO: Add Layout-ing
         }
     }
 
-    public void initTopGames() {
+    private void initTopGames() {
         topGamesPanel = new JPanel();
         topGamesButtons = new ArrayList<JButton>();
         topGamesNames = new ArrayList<JLabel>();
@@ -332,7 +342,7 @@ public class mainMenu extends JFrame{
         }
     }
 
-    public void initGamesByAll() {
+    private void initGamesByAll() {
         allGamesPanel = new JPanel();
         allGamesButtons = new ArrayList<JButton>();
         allGamesNames = new ArrayList<JLabel>();
@@ -355,7 +365,6 @@ public class mainMenu extends JFrame{
                 Integer gameId = rs.getInt(1);
                 String gameName = rs.getString(2);
                 String gameGenre = rs.getString(3);
-                //JLabel gameInfo = new JLabel(gameName + " " + gameGenre);
                 allGamesNames.add(new JLabel(gameName, SwingConstants.CENTER));
                 allGamesGenres.add(new JLabel(gameGenre, SwingConstants.CENTER));
                 allGamesButtons.add(createButtonToGames(gameId));
@@ -368,7 +377,7 @@ public class mainMenu extends JFrame{
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
-        final JLabel allGamesLabel = new JLabel("Top 5 Games Played By Top 5 Users!", SwingConstants.CENTER);
+        final JLabel allGamesLabel = new JLabel("Top 5 Games Played By All Users!", SwingConstants.CENTER);
         allGamesPanel.add(allGamesLabel, c);
 
         c.gridx = 0;
@@ -396,7 +405,7 @@ public class mainMenu extends JFrame{
     }
 
     private JButton createButtonToGames(final Integer gameId) {
-        JButton button = new JButton("Details");
+        JButton button = new JButton("Info");
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -409,13 +418,39 @@ public class mainMenu extends JFrame{
     }
 
     private JButton createButtonToUsers(final Integer userId) {
-        JButton button = new JButton("Details");
+        JButton button = new JButton("Info");
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("This is the userId: " + userId.toString());
                 UserProfileGUI temp = new UserProfileGUI(con, userId);
                 temp.setPanel(loggedInUserId, frame);
+            }
+        });
+        return button;
+    }
+
+    private JButton createButtonToDevelopers(final Integer devId) {
+        JButton button = new JButton("Info");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("This is the devId: " + devId.toString());
+                DeveloperInfoGUI temp = new DeveloperInfoGUI(con, devId);
+                temp.setPanel(loggedInUserId, frame);
+            }
+        });
+        return button;
+    }
+
+    private JButton createButtonToPlatforms(final Integer platId) {
+        JButton button = new JButton("Info");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("This is the platId: " + platId.toString());
+                PlatformInfoGUI temp = new PlatformInfoGUI(platId, loggedInUserId, con);
+                temp.setPanel(frame);
             }
         });
         return button;
@@ -432,98 +467,17 @@ public class mainMenu extends JFrame{
 
         SpringLayout layout = new SpringLayout();
         layout.putConstraint(SpringLayout.NORTH, searchPanel, 0, SpringLayout.SOUTH, toolbarPanel);
-        layout.putConstraint(SpringLayout.NORTH, topUsersPanel, 0, SpringLayout.SOUTH, searchPanel);
-        layout.putConstraint(SpringLayout.NORTH, topGamesPanel, 0, SpringLayout.SOUTH, searchPanel);
-        layout.putConstraint(SpringLayout.NORTH, allGamesPanel, 0, SpringLayout.SOUTH, topUsersPanel);
-        layout.putConstraint(SpringLayout.WEST, topGamesPanel, 0, SpringLayout.EAST, topUsersPanel);
-        layout.putConstraint(SpringLayout.WEST, topGamesPanel, 0, SpringLayout.EAST, allGamesPanel);
+        layout.putConstraint(SpringLayout.NORTH, resultsPanel, 0, SpringLayout.SOUTH, searchPanel);
+        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, resultsPanel, 0, SpringLayout.HORIZONTAL_CENTER, searchPanel);
+        layout.putConstraint(SpringLayout.NORTH, topUsersPanel, 10, SpringLayout.SOUTH, resultsPanel);
+        layout.putConstraint(SpringLayout.NORTH, topGamesPanel, 10, SpringLayout.SOUTH, resultsPanel);
+        layout.putConstraint(SpringLayout.NORTH, allGamesPanel, 20, SpringLayout.SOUTH, topUsersPanel);
+        layout.putConstraint(SpringLayout.WEST, topGamesPanel, 10, SpringLayout.EAST, topUsersPanel);
+        layout.putConstraint(SpringLayout.WEST, topGamesPanel, 10, SpringLayout.EAST, allGamesPanel);
         mainPanel.setLayout(layout);
 
         frame.setContentPane(mainPanel);
         frame.revalidate();
         frame.repaint();
     }
-
-    // TODO: Look at this for help in doing search results
-//    public void addGamesToPanel(ResultSet rs){
-//        if (resultsPanel.getComponents() != null){
-//            resultsPanel.removeAll();
-//        }
-//
-//        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.PAGE_AXIS));
-//        try{
-//            int columnCount = rs.getMetaData().getColumnCount();
-//
-//            while(rs.next()){
-//                String s = "";
-//
-//                for (int i = 1; i <= columnCount; i++){
-//                    if (i != columnCount){
-//                        s += rs.getString(i) + " - ";
-//                    }
-//                    else {
-//                        s+= rs.getString(i);
-//                    }
-//                }
-//                s+="\n";
-//                JLabel temp = new JLabel(s);
-//                resultsPanel.add(temp);
-//
-//            }
-//        }catch (SQLException e1){
-//            e1.printStackTrace();
-//        }
-//        mainPanel.add(resultsPanel);
-//        frame.revalidate();
-//        frame.repaint();
-//    }
-
-
-    //TODO: Look at this to do search
-//    searchGameName.addActionListener(new ActionListener(){
-//        public void actionPerformed(ActionEvent e){
-//            String search = searchField.getText();
-//            String option = (String) searchOptions.getSelectedItem();
-//            System.out.println("Attempting to search for " + search);
-//            try {
-//                if (!search.isEmpty()){
-//                    Statement s = con.createStatement();
-//                    String query;
-//                    if (option.contentEquals("Game")){
-//                        query = "SELECT gameName, gameGenre, pName"
-//                                + " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
-//                                + " INNER JOIN platform p ON a.pId = p.pId"
-//                                + " WHERE UPPER(gameName) LIKE UPPER('%" + search + "%')";
-//                    }
-//                    else if (option.contentEquals("Platform")){
-//                        query = "SELECT pName, cost, releaseDate "
-//                                + "FROM platform "
-//                                + "WHERE UPPER(pName) LIKE UPPER('%" + search + "%')";
-//                    }
-//                    else {
-//                        query = "SELECT dName "
-//                                + "FROM developer "
-//                                + "WHERE UPPER(dName) LIKE UPPER('%" + search + "%')";
-//                    }
-//                    ResultSet rs = s.executeQuery(query);
-//                    if (!rs.isBeforeFirst()){
-//                        System.out.println("Could not find a game matching this query");
-//                        if (resultsPanel.getComponents() != null){
-//                            resultsPanel.removeAll();
-//                        }
-//                        JLabel temp = new JLabel("No results found.");
-//                        resultsPanel.add(temp);
-//                        mainPanel.add(resultsPanel);
-//                        frame.revalidate();
-//                        frame.repaint();
-//                        System.out.println("?");		    			}
-//                    else {
-//                        addGamesToPanel(rs);
-//                    }
-//                }
-//            } catch (SQLException e1){
-//                e1.printStackTrace();
-//            }
-//        }
-//    });
 }
