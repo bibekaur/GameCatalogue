@@ -23,6 +23,9 @@ public class mainMenu extends JFrame{
     private JTextField searchField;
     private String[] options = {"Game", "Platform", "Developer"};
     private JComboBox<String> searchOptions;
+    
+    /*Results from Search*/
+    private JPanel resultsPanel;
 
     /* Top 10 games */
     private JPanel topGamesPanel;
@@ -81,6 +84,7 @@ public class mainMenu extends JFrame{
     public void initSearch() {
 
         searchPanel = new JPanel();
+        resultsPanel = new JPanel();
         searchPanel.setLayout(new FlowLayout());
         searchOptions = new JComboBox<String>(options);
         searchButton = new JButton("Search");
@@ -101,18 +105,18 @@ public class mainMenu extends JFrame{
                         String query;
 
                         if (option.contentEquals("Game")){
-                            query = "SELECT gameName, gameGenre, pName"
+                            query = "SELECT g.gameId AS id, gameName, gameGenre, pName"
                                 + " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
                                 + " INNER JOIN platform p ON a.pId = p.pId"
                                 + " WHERE UPPER(gameName) LIKE UPPER('%" + search + "%')";
                         }
                         else if (option.contentEquals("Platform")){
-                            query = "SELECT pName, cost, releaseDate "
+                            query = "SELECT pId AS id, pName, cost, releaseDate "
                                     + "FROM platform "
                                     + "WHERE UPPER(pName) LIKE UPPER('%" + search + "%')";
                         }
                         else {
-                            query = "SELECT dName "
+                            query = "SELECT dId AS id, dName "
                                     + "FROM developer "
                                     + "WHERE UPPER(dName) LIKE UPPER('%" + search + "%')";
                         }
@@ -120,7 +124,58 @@ public class mainMenu extends JFrame{
                         if (!rs.isBeforeFirst()){
                             System.out.println("Could not find a game matching this query");}
                         else {
-                            System.out.println("Found something");
+                    		if (resultsPanel.getComponents() != null){
+                    			resultsPanel.removeAll();
+                    		}
+                        	try{
+                    			int columnCount = rs.getMetaData().getColumnCount();
+                    			
+                    			while(rs.next()){				
+                    				String s1 = "";
+                    				
+                    				for (int i = 2; i <= columnCount; i++){
+                    					if (i != columnCount){
+                    						s1 += rs.getString(i) + " - ";
+                    					}
+                    					else {
+                    						s1+= rs.getString(i);
+                    					}
+                    				}
+                    				s1+="\n";
+                    				JLabel temp = new JLabel(s1);
+                    				JButton tempbutt = new JButton("Info");
+                    				tempbutt.putClientProperty("id", Integer.valueOf(rs.getInt("id")));
+                    				tempbutt.addActionListener(new ActionListener() {
+                    		            @Override
+                    		            public void actionPerformed(ActionEvent e) {
+                    		            	int id = (Integer) ((JButton)e.getSource()).getClientProperty("id");
+                    		            	if (option.contentEquals("Game")){
+                    		            		GameInfoGUI GameGui;
+												GameGui = new GameInfoGUI(id, loggedInUserId, con);
+												GameGui.setPanel(frame);
+                    		     
+                    		            	}else if (option.contentEquals("Platform")){
+                    		            		PlatformInfoGUI PlatformGui;
+												PlatformGui = new PlatformInfoGUI(id, loggedInUserId, con);
+												PlatformGui.setPanel(frame);
+                    		            	}else{
+                    		            		DeveloperInfoGUI DeveloperGui;
+												DeveloperGui = new DeveloperInfoGUI(con, id);
+												DeveloperGui.setPanel(loggedInUserId, frame);
+  		            		
+                    		            	}
+                    		            }
+                    		        });
+                    				
+                    				resultsPanel.add(temp);
+                    				resultsPanel.add(tempbutt);
+                    				
+                    			}
+                    			frame.revalidate();
+                    			frame.repaint();
+                    		}catch (SQLException e1){
+                    			e1.printStackTrace();
+                    		}
                         }
                     }
                 } catch(SQLException e1) {
@@ -269,6 +324,7 @@ public class mainMenu extends JFrame{
         this.frame = frame;
         mainPanel.add(toolbarPanel);
         mainPanel.add(searchPanel);
+        mainPanel.add(resultsPanel);
         mainPanel.add(topGamesPanel);
         mainPanel.add(allGamesPanel);
         mainPanel.add(topUsersPanel);
