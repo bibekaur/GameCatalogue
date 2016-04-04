@@ -7,7 +7,7 @@ public class GuiProgram extends JFrame{
     private Connection con;
 
     private JFrame frame;
-
+    
     public GuiProgram() {
         setTitle("Game Catalogue");
         setSize(500,400); // default size is 0,0
