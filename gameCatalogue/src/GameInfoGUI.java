@@ -114,9 +114,9 @@ public class GameInfoGUI extends JFrame{
 	}
 	
 	private void getAverageRating(){
-		try { //Let's get all the reviews and owns ratings
+		try { //Let's get all the review ratings
 			Statement s = con.createStatement();
-			String query = "SELECT AVG(rating) from owns WHERE gameId=" + gameId + " AND userId=" + loggedInUserId;
+			String query = "SELECT AVG(rating) from review WHERE gameId=" + gameId;
 			ResultSet rs = s.executeQuery(query);
 			
 			if (rs.next()){
