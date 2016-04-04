@@ -233,22 +233,12 @@ insert into developed
 values (1, 1);
 
 insert into developed
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
-=======
->>>>>>> master
 values (1, 2);
 
 insert into developed
 values (1, 3);
 
 insert into developed
-<<<<<<< HEAD
-=======
->>>>>>> integrate_platform
->>>>>>> master
 values (2, 6);
 
 insert into developed
