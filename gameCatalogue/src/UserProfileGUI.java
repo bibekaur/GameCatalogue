@@ -294,12 +294,14 @@ public class UserProfileGUI extends JFrame{
 					
 					if (rs.next()){
 						rs.deleteRow();
+						mainMenu m = new mainMenu(con, loggedInUserId);
+						m.drawMenu(frame);
 					}
 					
 				} catch (SQLException e1){
 					e1.printStackTrace();
 				}
-				//TODO: go back to main page
+			
 			}
 		});
 		

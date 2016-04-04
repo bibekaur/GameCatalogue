@@ -49,7 +49,6 @@ public class LoginGUI extends JFrame {
                         }
                         else {
                             Integer loggedInUserId = rs.getInt(1);
-                            //drawLoggedInScreen();
                             mainMenu m = new mainMenu(con, loggedInUserId);
                             m.drawMenu(frame);
                         }
