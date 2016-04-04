@@ -50,7 +50,7 @@ public class LoginGUI extends JFrame {
                         else {
                             Integer loggedInUserId = rs.getInt(1);
                             //drawLoggedInScreen();
-                            MainMenu m = new MainMenu(con, loggedInUserId);
+                            mainMenu m = new mainMenu(con, loggedInUserId);
                             m.drawMenu(frame);
                         }
                     } catch (SQLException e1) {
@@ -85,7 +85,7 @@ public class LoginGUI extends JFrame {
                             rs = s.executeQuery(query);
                             if(rs.next()) {
                                 Integer userId = rs.getInt(1);
-                                MainMenu m = new MainMenu(con, userId);
+                                mainMenu m = new mainMenu(con, userId);
                                 m.drawMenu(frame);
                             }
                         }
