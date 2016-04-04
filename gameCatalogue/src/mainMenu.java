@@ -356,7 +356,7 @@ public class mainMenu extends JFrame{
                     + " HAVING COUNT(*) = (SELECT COUNT(*) FROM users))"
                     + " GROUP BY g.gameId, g.gameName, g.gameGenre"
                     + " ORDER BY avg_rating)"
-                    + " WHERE ROWNUM <= 10";
+                    + " WHERE ROWNUM <= 5";
             ResultSet rs = s.executeQuery(query);
             while(rs.next()) {
                 Integer gameId = rs.getInt(1);
@@ -375,7 +375,7 @@ public class mainMenu extends JFrame{
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
-        final JLabel allGamesLabel = new JLabel("Top 5 Games Played By Top 5 Users!", SwingConstants.CENTER);
+        final JLabel allGamesLabel = new JLabel("Top 5 Games Played By All Users!", SwingConstants.CENTER);
         allGamesPanel.add(allGamesLabel, c);
 
         c.gridx = 0;
