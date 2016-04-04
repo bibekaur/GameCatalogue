@@ -21,7 +21,7 @@ public class MainMenu extends JFrame{
     private JPanel searchPanel;
     private JButton searchButton;
     private JTextField searchField;
-    private String[] options = {"Game", "Platform", "Developer"};
+    private String[] options = {"Game", "Platform", "Developer, User"};
     private JComboBox<String> searchOptions;
 
     /* Top 10 games */
@@ -74,6 +74,8 @@ public class MainMenu extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //go to login screen again, set logged out
+                LoginGUI g = new LoginGUI(con);
+                g.setPanel(frame);
             }
         });
     }
@@ -111,10 +113,15 @@ public class MainMenu extends JFrame{
                                     + "FROM platform "
                                     + "WHERE UPPER(pName) LIKE UPPER('%" + search + "%')";
                         }
-                        else {
+                        else if (option.contentEquals("Developer")){
                             query = "SELECT dName "
                                     + "FROM developer "
                                     + "WHERE UPPER(dName) LIKE UPPER('%" + search + "%')";
+                        }
+                        else {
+                            query = "SELECT username"
+                                    + " FROM users"
+                                    + " WHERE UPPER(username) LIKE UPPER('%" + search + "%')";
                         }
                         ResultSet rs = s.executeQuery(query);
                         if (!rs.isBeforeFirst()){
@@ -249,6 +256,8 @@ public class MainMenu extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("This is the gameId: " + gameId.toString());
+                GameInfoGUI temp = new GameInfoGUI(gameId, loggedInUserId, con);
+                temp.setPanel(frame);
             }
         });
         return button;
@@ -260,6 +269,8 @@ public class MainMenu extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("This is the userId: " + userId.toString());
+                UserProfileGUI temp = new UserProfileGUI(con, userId);
+                temp.setPanel(loggedInUserId, frame);
             }
         });
         return button;
@@ -277,4 +288,87 @@ public class MainMenu extends JFrame{
         frame.revalidate();
         frame.repaint();
     }
+
+    // TODO: Look at this for help in doing search results
+//    public void addGamesToPanel(ResultSet rs){
+//        if (resultsPanel.getComponents() != null){
+//            resultsPanel.removeAll();
+//        }
+//
+//        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.PAGE_AXIS));
+//        try{
+//            int columnCount = rs.getMetaData().getColumnCount();
+//
+//            while(rs.next()){
+//                String s = "";
+//
+//                for (int i = 1; i <= columnCount; i++){
+//                    if (i != columnCount){
+//                        s += rs.getString(i) + " - ";
+//                    }
+//                    else {
+//                        s+= rs.getString(i);
+//                    }
+//                }
+//                s+="\n";
+//                JLabel temp = new JLabel(s);
+//                resultsPanel.add(temp);
+//
+//            }
+//        }catch (SQLException e1){
+//            e1.printStackTrace();
+//        }
+//        mainPanel.add(resultsPanel);
+//        frame.revalidate();
+//        frame.repaint();
+//    }
+
+
+    //TODO: Look at this to do search
+//    searchGameName.addActionListener(new ActionListener(){
+//        public void actionPerformed(ActionEvent e){
+//            String search = searchField.getText();
+//            String option = (String) searchOptions.getSelectedItem();
+//            System.out.println("Attempting to search for " + search);
+//            try {
+//                if (!search.isEmpty()){
+//                    Statement s = con.createStatement();
+//                    String query;
+//                    if (option.contentEquals("Game")){
+//                        query = "SELECT gameName, gameGenre, pName"
+//                                + " FROM game g INNER JOIN available a ON g.gameId = a.gameId"
+//                                + " INNER JOIN platform p ON a.pId = p.pId"
+//                                + " WHERE UPPER(gameName) LIKE UPPER('%" + search + "%')";
+//                    }
+//                    else if (option.contentEquals("Platform")){
+//                        query = "SELECT pName, cost, releaseDate "
+//                                + "FROM platform "
+//                                + "WHERE UPPER(pName) LIKE UPPER('%" + search + "%')";
+//                    }
+//                    else {
+//                        query = "SELECT dName "
+//                                + "FROM developer "
+//                                + "WHERE UPPER(dName) LIKE UPPER('%" + search + "%')";
+//                    }
+//                    ResultSet rs = s.executeQuery(query);
+//                    if (!rs.isBeforeFirst()){
+//                        System.out.println("Could not find a game matching this query");
+//                        if (resultsPanel.getComponents() != null){
+//                            resultsPanel.removeAll();
+//                        }
+//                        JLabel temp = new JLabel("No results found.");
+//                        resultsPanel.add(temp);
+//                        mainPanel.add(resultsPanel);
+//                        frame.revalidate();
+//                        frame.repaint();
+//                        System.out.println("?");		    			}
+//                    else {
+//                        addGamesToPanel(rs);
+//                    }
+//                }
+//            } catch (SQLException e1){
+//                e1.printStackTrace();
+//            }
+//        }
+//    });
 }
