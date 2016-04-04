@@ -8,18 +8,20 @@ public class GuiProgram extends JFrame{
 
     private JFrame frame;
     
+
     public GuiProgram() {
         setTitle("Game Catalogue");
         setSize(500,400); // default size is 0,0
         setLocation(400,200); // default is 0,0 (top left corner)
     }
 
-//TODO: Some Queries
+    	//TODO: Some Queries
         //Query to find game by platform
         /*String query = "SELECT gameName, gameGenre "
                 + "FROM game g INNER JOIN available a ON g.gameId = a.gameId "
                 + "INNER JOIN platform p ON a.pId = p.pId "
                 + "WHERE p.pName LIKE '%" + "query" + "%;";*/
+
 
         //Query to find game by average rating?
         /*String query = "SELECT gameName, gameGenre, avg_rating"
