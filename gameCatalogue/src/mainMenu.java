@@ -16,6 +16,7 @@ public class mainMenu extends JFrame{
     private JPanel toolbarPanel;
     private JButton userProfileButton;
     private JButton logoutButton;
+    private JButton createButton;
 
     /* Search bar */
     private JPanel searchPanel;
@@ -65,6 +66,19 @@ public class mainMenu extends JFrame{
         logoutButton = new JButton("Logout");
 
         toolbarPanel.add(userProfileButton);
+        
+        if (isModerator()){
+        	createButton = new JButton("Create");
+        	toolbarPanel.add(createButton);
+        	createButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InputFormGUI i = new InputFormGUI(con, loggedInUserId);
+                i.setPanel(frame);
+            }
+        });
+        }
+        
         toolbarPanel.add(logoutButton);
 
         userProfileButton.addActionListener(new ActionListener() {
@@ -82,6 +96,29 @@ public class mainMenu extends JFrame{
                 g.setPanel(frame);
             }
         });
+        
+
+        
+    }
+    
+    private boolean isModerator(){
+    	try {
+    		Statement s = con.createStatement();
+    		String query = "SELECT isModerator from users WHERE userId=" + loggedInUserId;
+    		ResultSet rs = s.executeQuery(query);
+    		
+    		rs.next();
+    		String mod = rs.getString("isModerator");
+    		
+    		if (mod.equals("1")){
+    			return true;
+    		}
+    		
+    	} catch (SQLException e1){
+			e1.printStackTrace();
+		}
+    	
+    	return false;
     }
 
     public void initSearch() {
