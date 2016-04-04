@@ -344,12 +344,19 @@ public class mainMenu extends JFrame{
 
         try {
             Statement s = con.createStatement();
-            String query = "SELECT g.gameId, g.gameName, g.gameGenre"
+            String query = "SELECT gameId, gameName, gameGenre, avg_rating"
+                    + " FROM (SELECT g.gameId, g.gameName, g.gameGenre, AVG(r.rating) AS avg_rating"
+                    + " FROM game g INNER JOIN review r ON g.gameId = r.gameId"
+                    + " WHERE g.gameId IN "
+                    + "(SELECT g.gameId"
                     + " FROM game g INNER JOIN owns o ON g.gameId = o.gameId"
                     + " WHERE o.userID IN (SELECT userID"
                     + " FROM users u)"
                     + " GROUP BY g.gameId, gameName, gameGenre"
-                    + " HAVING COUNT(*) = (SELECT COUNT(*) FROM users)";
+                    + " HAVING COUNT(*) = (SELECT COUNT(*) FROM users))"
+                    + " GROUP BY g.gameId, g.gameName, g.gameGenre"
+                    + " ORDER BY avg_rating)"
+                    + " WHERE ROWNUM <= 10";
             ResultSet rs = s.executeQuery(query);
             while(rs.next()) {
                 Integer gameId = rs.getInt(1);
