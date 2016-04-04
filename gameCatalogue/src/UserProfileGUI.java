@@ -296,6 +296,7 @@ public class UserProfileGUI extends JFrame{
 						rs.deleteRow();
 						mainMenu m = new mainMenu(con, loggedInUserId);
 						m.drawMenu(frame);
+						JOptionPane.showMessageDialog(null, "Successfully Deleted User.");
 					}
 					
 				} catch (SQLException e1){

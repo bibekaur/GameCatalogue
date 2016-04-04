@@ -38,7 +38,7 @@ public class mainMenu extends JFrame{
     private JPanel allGamesPanel;
     private ArrayList<JButton> allGamesButtons;
     private ArrayList<JLabel> allGamesNames;
-    private ArrayList<JLabel> allGamesGenres;
+    private ArrayList<JLabel> allGamesRatings;
 
     /* Top 5 Users */
     private JPanel topUsersPanel;
@@ -383,7 +383,7 @@ public class mainMenu extends JFrame{
         allGamesPanel = new JPanel();
         allGamesButtons = new ArrayList<JButton>();
         allGamesNames = new ArrayList<JLabel>();
-        allGamesGenres = new ArrayList<JLabel>();
+        allGamesRatings = new ArrayList<JLabel>();
 
         GridBagLayout layout = new GridBagLayout();
         allGamesPanel.setLayout(layout);
@@ -408,11 +408,10 @@ public class mainMenu extends JFrame{
             while(rs.next()) {
                 Integer gameId = rs.getInt(1);
                 String gameName = rs.getString(2);
-                String gameGenre = rs.getString(3);
+                Integer gameRating = rs.getInt(4);
                 allGamesNames.add(new JLabel(gameName, SwingConstants.CENTER));
-                allGamesGenres.add(new JLabel(gameGenre, SwingConstants.CENTER));
+                allGamesRatings.add(new JLabel(gameRating.toString() + "/10", SwingConstants.CENTER));
                 allGamesButtons.add(createButtonToGames(gameId));
-                System.out.println(gameName + " " + gameGenre);
             }
         } catch(SQLException e1) {
             e1.printStackTrace();
@@ -430,7 +429,7 @@ public class mainMenu extends JFrame{
 
         c.gridx = 1;
         c.gridy = 1;
-        allGamesPanel.add(new JLabel("Genre", SwingConstants.CENTER), c);
+        allGamesPanel.add(new JLabel("Rating", SwingConstants.CENTER), c);
 
         c.gridx = 2;
         c.gridy = 1;
@@ -441,7 +440,7 @@ public class mainMenu extends JFrame{
             allGamesPanel.add(allGamesNames.get(i), c);
 
             c.gridx = 1;
-            allGamesPanel.add(allGamesGenres.get(i), c);
+            allGamesPanel.add(allGamesRatings.get(i), c);
 
             c.gridx = 2;
             allGamesPanel.add(allGamesButtons.get(i), c);

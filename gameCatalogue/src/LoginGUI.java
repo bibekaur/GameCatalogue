@@ -87,6 +87,7 @@ public class LoginGUI extends JFrame {
                                 mainMenu m = new mainMenu(con, userId);
                                 m.drawMenu(frame);
                             }
+                            JOptionPane.showMessageDialog(null, "Successfully Registered.");
                         }
 
                     }catch (SQLException e1){
